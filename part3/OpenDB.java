@@ -20,4 +20,5 @@ public class OpenDB {
 		}
 		return new Database[]{ad, date, price, terms};
 	}
+	
 }
