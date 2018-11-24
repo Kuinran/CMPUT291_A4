@@ -21,4 +21,13 @@ public class OpenDB {
 		return new Database[]{ad, date, price, terms};
 	}
 	
+	public static void Close(Database db) {
+		try {
+			if(db != null) {
+				db.close();
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
 }
