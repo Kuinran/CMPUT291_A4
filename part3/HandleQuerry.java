@@ -1,5 +1,6 @@
 import com.sleepycat.db.*;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -371,47 +372,7 @@ public class HandleQuerry {
 				String sData = new String(fData.getData(), "UTF-8").toLowerCase();
 				matcher = pattern.matcher(sData);
 				if (matcher.find()) { // match found retrieve data
-					map = new HashMap<String, String>();
-					sData = new String(fData.getData(), "UTF-8");
-					if (full) {
-						Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
-						Pattern pdate = Pattern.compile(Pattern.quote("<date>") + "(.*?)" + Pattern.quote("</date>"));
-						Pattern ploc = Pattern.compile(Pattern.quote("<loc>") + "(.*?)" + Pattern.quote("</loc>"));
-						Pattern pcat = Pattern.compile(Pattern.quote("<cat>") + "(.*?)" + Pattern.quote("</cat>"));
-						Pattern pti = Pattern.compile(Pattern.quote("<ti>") + "(.*?)" + Pattern.quote("</ti>"));
-						Pattern pdesc = Pattern.compile(Pattern.quote("<desc>") + "(.*?)" + Pattern.quote("</desc>"));
-						Pattern pprice = Pattern.compile(Pattern.quote("<price>") + "(.*?)" + Pattern.quote("</price>"));
-						
-						Matcher madd = padd.matcher(sData);
-						Matcher mdate = pdate.matcher(sData);
-						Matcher mloc = ploc.matcher(sData);
-						Matcher mcat = pcat.matcher(sData);
-						Matcher mti = pti.matcher(sData);
-						Matcher mdesc = pdesc.matcher(sData);
-						Matcher mprice = pprice.matcher(sData);
-
-						if(madd.find() && mdate.find() && mloc.find() && mcat.find() && mti.find() && mdesc.find() && mprice.find()) {
-							map.put("aid", madd.group(1));
-							map.put("date",mdate.group(1));
-							map.put("loc",mloc.group(1));
-							map.put("cat",mcat.group(1));
-							map.put("title",mti.group(1));
-							map.put("desc",mdesc.group(1));
-							map.put("price",mprice.group(1));
-							//System.out.println(map.toString());
-							set.add(map);
-						}
-					} else {
-						Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
-						Matcher madd = padd.matcher(sData);
-						Pattern p = Pattern.compile(Pattern.quote("<ti>") + "(.*?)" + Pattern.quote("</ti>"));
-						Matcher m = p.matcher(sData);
-						if(m.find() & madd.find()) {
-							map.put("aid", madd.group(1));
-							map.put("title",m.group(1));
-							set.add(map);
-						}
-					}
+					addData(set, fData, full);
 				}
 			}
 		} catch (Exception e) {
@@ -426,5 +387,54 @@ public class HandleQuerry {
 			}
 		}
 		return set;
+	}
+	
+	public static void addData(HashSet<HashMap<String, String>> set, DatabaseEntry fData, boolean full) {
+		HashMap<String, String> map = new HashMap<String, String>();
+		try {
+			String sData = new String(fData.getData(), "UTF-8");
+			if (full) {
+				Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
+				Pattern pdate = Pattern.compile(Pattern.quote("<date>") + "(.*?)" + Pattern.quote("</date>"));
+				Pattern ploc = Pattern.compile(Pattern.quote("<loc>") + "(.*?)" + Pattern.quote("</loc>"));
+				Pattern pcat = Pattern.compile(Pattern.quote("<cat>") + "(.*?)" + Pattern.quote("</cat>"));
+				Pattern pti = Pattern.compile(Pattern.quote("<ti>") + "(.*?)" + Pattern.quote("</ti>"));
+				Pattern pdesc = Pattern.compile(Pattern.quote("<desc>") + "(.*?)" + Pattern.quote("</desc>"));
+				Pattern pprice = Pattern.compile(Pattern.quote("<price>") + "(.*?)" + Pattern.quote("</price>"));
+				
+				Matcher madd = padd.matcher(sData);
+				Matcher mdate = pdate.matcher(sData);
+				Matcher mloc = ploc.matcher(sData);
+				Matcher mcat = pcat.matcher(sData);
+				Matcher mti = pti.matcher(sData);
+				Matcher mdesc = pdesc.matcher(sData);
+				Matcher mprice = pprice.matcher(sData);
+
+				if(madd.find() && mdate.find() && mloc.find() && mcat.find() && mti.find() && mdesc.find() && mprice.find()) {
+					map.put("aid", madd.group(1));
+					map.put("date",mdate.group(1));
+					map.put("loc",mloc.group(1));
+					map.put("cat",mcat.group(1));
+					map.put("title",mti.group(1));
+					map.put("desc",mdesc.group(1));
+					map.put("price",mprice.group(1));
+					//System.out.println(map.toString());
+					set.add(map);
+				}
+			} else {
+				Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
+				Matcher madd = padd.matcher(sData);
+				Pattern p = Pattern.compile(Pattern.quote("<ti>") + "(.*?)" + Pattern.quote("</ti>"));
+				Matcher m = p.matcher(sData);
+				if(m.find() & madd.find()) {
+					map.put("aid", madd.group(1));
+					map.put("title",m.group(1));
+					set.add(map);
+				}
+			}
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
