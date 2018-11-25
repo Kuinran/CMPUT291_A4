@@ -7,7 +7,7 @@ public class HandleQuerry {
 	
 	//Dataaarray = {addData,dateData,PriceData,termsData}
 	public static HashSet<HashMap<String,String>> getPrice(String op, int price, Database[] Dataarray,boolean full) {
-		System.out.println("getPrice Reached!!");
+		//System.out.println("getPrice Reached!!" + full);
 		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
 		Cursor myCursor = null;
 		Database PriceData = Dataarray[2];
@@ -23,13 +23,13 @@ public class HandleQuerry {
 			//each iteration the cursor points to, KEY:DATA
 		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
 		        OperationStatus.SUCCESS) {
-		    	System.out.println("If this prints, we are iterating through the price data");
+		    	//System.out.println("If this prints, we are iterating through the price data");
 		        String keyPrice = new String(foundKey.getData(), "UTF-8");
 		        String dataString = new String(foundData.getData(), "UTF-8");
 		        String[] parts = dataString.split("\\s*,\\s*");
 		        String aid = parts[0];
-		        System.out.println("The aid is: " + aid);
-		        if(op == ">") {
+		        //System.out.println("The aid is: " + aid);
+		        if(op.compareTo(">") == 0) {
 		        	if(Integer.parseInt(keyPrice) > price) {
 		        		
 		        		HashMap<String, String> map;
@@ -45,7 +45,7 @@ public class HandleQuerry {
 		        
 		        }
 		        
-		        else if(op == ">=") {
+		        else if(op.compareTo(">=") == 0) {
 		        	if(Integer.parseInt(keyPrice) >= price) {
 		        		HashMap<String, String> map;
 		        		if(full) {
@@ -59,7 +59,7 @@ public class HandleQuerry {
 		        	}
 		        }
 		    
-		        else if(op == "<") {
+		        else if(op.compareTo("<") == 0) {
 		        	if(Integer.parseInt(keyPrice) < price) {
 		        		HashMap<String, String> map;
 		        		if(full) {
@@ -73,7 +73,7 @@ public class HandleQuerry {
 		        	}
 		        }
 		        
-		        else if(op == "<=") {
+		        else if(op.compareTo("<=") == 0) {
 		        	if(Integer.parseInt(keyPrice) <= price) {
 		        		HashMap<String, String> map;
 		        		if(full) {
@@ -90,6 +90,7 @@ public class HandleQuerry {
 		        	if(Integer.parseInt(keyPrice) == price) {
 		        		HashMap<String, String> map;
 		        		if(full) {
+		        			//System.out.println("Hello?");
 		        			map = getFull(aid, addData);
 		        		}
 		        		else {
@@ -127,7 +128,7 @@ public class HandleQuerry {
 				OperationStatus.SUCCESS) {
 					String keyAdd = new String(foundKey2.getData(), "UTF-8");
 					String dataString2 = new String(foundData2.getData(), "UTF-8");
-					if(aid == keyAdd) {
+					if(aid.compareTo(keyAdd) == 0) {
 						//TODO: Michael put this.Verify if it works
 							Pattern p = Pattern.compile(Pattern.quote("<ti>") + "(.*?)" + Pattern.quote("</ti>"));
 							Matcher m = p.matcher(dataString2);
@@ -162,11 +163,12 @@ public class HandleQuerry {
 				aidCursor = addData.openCursor(null, null);
 				while (aidCursor.getNext(foundKey2, foundData2, LockMode.DEFAULT) ==
 				OperationStatus.SUCCESS) {
-					System.out.println("Second stage, iterating through getFull");
+					//System.out.println("Second stage, iterating through getFull");
 					//each iteration the cursor points to, KEY:DATA
 					String keyAdd = new String(foundKey2.getData(), "UTF-8");
 					String dataString2 = new String(foundData2.getData(), "UTF-8");
-					if(aid == keyAdd) {
+					if(aid.compareTo(keyAdd) == 0) {
+						//System.out.println("aid match found");
 						//TODO: Michael put this.Verify if it works
 							Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
 							Pattern pdate = Pattern.compile(Pattern.quote("<date>") + "(.*?)" + Pattern.quote("</date>"));
@@ -206,7 +208,7 @@ public class HandleQuerry {
 			    System.err.println("Error accessing the database: " + e);
 			}
 			System.out.println("We are about to return null");
-		return null;
+		return map;
 	}
 	public HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
 		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();

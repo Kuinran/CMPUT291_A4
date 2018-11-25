@@ -120,7 +120,7 @@ public class Driver {
 	}
 	
 	private void processQuery() {
-		System.out.println("Searching for results");
+		System.out.println("\nSearching for results...\n");
 		results = new HashSet<HashMap<String, String>>();
 		Set<HashMap<String, String>> temp = new HashSet<HashMap<String, String>>();
 		for (Expression expression : expressions) {
@@ -191,17 +191,19 @@ public class Driver {
 		} else {
 			System.out.println("Printing Results...");
 			if (format == Formats.BRIEF) { // brief mode
+				System.out.println(String.format("%1$-13s|%2$-30s", "Ad ID", "Title"));
 				for (Map<String, String> result : results) {
-					System.out.println(String.format("%1$-13s|%2$-30s", "Ad ID", "Title"));
 					System.out.println(String.format("%1$-13s|%2$-30s", result.get("aid"), result.get("title")));
 				}
+				System.out.println();
 			} else { // full mode
-				String str = "%1$-13s|%2$-10s|%3$-10s|%4$-30s|%5$-6s|%6$s";
+				String str = "%1$-13s|%2$-10s|%3$-10s|%4$-40s|%5$-6s|%6$s";
+				System.out.println(String.format(str, "Ad ID", "Date", "Location", "Title", "Price", "Description"));
 				for (Map<String, String> result : results) {
-					System.out.println(String.format(str, "Ad ID", "Date", "Location", "Title", "Price", "Description"));
 					System.out.println(String.format(str, result.get("aid"), result.get("date"), result.get("loc"), result.get("title"),
 							result.get("price"), result.get("desc")));
 				}
+				System.out.println();
 			}
 		}
 	}
