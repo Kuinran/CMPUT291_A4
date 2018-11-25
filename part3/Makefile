@@ -7,10 +7,10 @@ JC = javac -classpath /usr/share/java/db-5.3.28.jar
 
 CLASSES = \
 	Main_States.java \
-	Driver.java \
 	Query_Type.java \
 	Formats.java \
 	OpenDB.java \
+	Driver.java \
 	Main.java
 
 default: classes
