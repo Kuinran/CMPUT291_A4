@@ -86,7 +86,7 @@ public class HandleQuerry {
 		     		    hashout.add(map);
 		        	}
 		        }
-		        else if(op == "=") {
+		        else if(op.compareTo("=") == 0) {
 		        	if(Integer.parseInt(keyPrice) == price) {
 		        		HashMap<String, String> map;
 		        		if(full) {
