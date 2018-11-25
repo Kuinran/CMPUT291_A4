@@ -141,15 +141,15 @@ public class Driver {
 			case LOCATION:
 				//System.out.println("Sending location query " + expression.arg);
 				if (format == Formats.FULL) {
-					
+					temp = HandleQuerry.getLocation(expression.arg, dbs, true);
 				} else {
-					
+					temp = HandleQuerry.getLocation(expression.arg, dbs, false);
 				}
 				break;
 			case DATE:
 				//System.out.println("Sending date query " + expression.arg);
 				if (format == Formats.FULL) {
-					
+
 				} else {
 					
 				}
@@ -157,9 +157,9 @@ public class Driver {
 			case CAT:
 				//System.out.println("Sending cat query " + expression.arg);
 				if (format == Formats.FULL) {
-					
+					temp = HandleQuerry.getCategory(expression.arg, dbs, true);
 				} else {
-					
+					temp = HandleQuerry.getCategory(expression.arg, dbs, false);
 				}
 				break;
 			case TERM:
