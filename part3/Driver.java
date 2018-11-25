@@ -10,6 +10,9 @@ import java.util.regex.Pattern;
 import com.sleepycat.db.*;
 
 public class Driver {
+	private enum Formats {FULL, BRIEF};
+	private enum Main_States {PARSING, QUERY, PRINT, QUIT};
+	private enum Query_Type {LOCATION, PRICE, CAT, DATE, TERM, PARTTERM};
 	Main_States state;
 	Formats format;
 	String currLine;
