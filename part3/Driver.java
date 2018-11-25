@@ -108,10 +108,12 @@ public class Driver {
 				} else if (matcher.group(9) != null) { // cat match
 					expressions.add(this.new Expression(Query_Type.CAT, "=", matcher.group(10)));
 				} else { // term match
-					if (matcher.group().endsWith("%")) { // partial match
+					if (matcher.group().endsWith("%") && matcher.group(12).length()>2) { // partial match
 						expressions.add(this.new Expression(Query_Type.PARTTERM, "NA", matcher.group(12)));
 					} else { // full match
-						expressions.add(this.new Expression(Query_Type.TERM,"NA", matcher.group(12)));
+						if (matcher.group(12).length()>2) {
+							expressions.add(this.new Expression(Query_Type.TERM,"NA", matcher.group(12)));
+						}
 					}
 				}
 			}
@@ -127,13 +129,13 @@ public class Driver {
 			// uses a function to search db then saves results in a set
 			switch(expression.type) {
 			case PRICE:
-				System.out.println("Sending price query " + expression.arg);
+				//System.out.println("Sending price query " + expression.arg);
 				if (format == Formats.FULL) {
 					temp = HandleQuerry.getPrice(expression.op, Integer.parseInt(expression.arg), dbs, true);
-					System.out.println(temp.toString() + temp.isEmpty());
+					//System.out.println(temp.toString() + temp.isEmpty());
 				} else {
 					temp = HandleQuerry.getPrice(expression.op, Integer.parseInt(expression.arg), dbs, false);
-					System.out.println(temp.toString() + temp.isEmpty());
+					//System.out.println(temp.toString() + temp.isEmpty());
 				}
 				break;
 			case LOCATION:
@@ -188,6 +190,7 @@ public class Driver {
 	private void processPrint() {
 		if (results.isEmpty()) {
 			System.out.println("No results were found");
+			System.out.println();
 		} else {
 			System.out.println("Printing Results...");
 			if (format == Formats.BRIEF) { // brief mode
@@ -197,7 +200,7 @@ public class Driver {
 				}
 				System.out.println();
 			} else { // full mode
-				String str = "%1$-13s|%2$-10s|%3$-10s|%4$-40s|%5$-6s|%6$s";
+				String str = "%1$-13s|%2$-10s|%3$-10s|%4$-50s|%5$-6s|%6$s";
 				System.out.println(String.format(str, "Ad ID", "Date", "Location", "Title", "Price", "Description"));
 				for (Map<String, String> result : results) {
 					System.out.println(String.format(str, result.get("aid"), result.get("date"), result.get("loc"), result.get("title"),

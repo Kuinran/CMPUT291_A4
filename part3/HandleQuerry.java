@@ -27,6 +27,7 @@ public class HandleQuerry {
 		        Pattern p = Pattern.compile("[A-Za-z0-9]*");
 		     
 		    	String keyPrice = new String(foundKey.getData(), "UTF-8");
+		    	//System.out.println(keyPrice);
 		    	keyPrice = keyPrice.replaceAll("\\s","");
 		        String dataString = new String(foundData.getData(), "UTF-8");
 		        String[] parts = dataString.split("\\s*,\\s*");
@@ -199,6 +200,7 @@ public class HandleQuerry {
 								map.put("desc",mdesc.group(1));
 								map.put("price",mprice.group(1));
 								aidCursor.close();
+								//System.out.println(map.toString());
 								return map;
 							}
 							else {
