@@ -189,18 +189,17 @@ public class Driver {
 	
 	private void processPrint() {
 		if (results.isEmpty()) {
-			System.out.println("No results were found");
-			System.out.println();
+			System.out.println("No results were found\n");
 		} else {
-			System.out.println("Printing Results...");
+			System.out.println("Printing Results...\n");
 			if (format == Formats.BRIEF) { // brief mode
-				System.out.println(String.format("%1$-13s|%2$-30s", "Ad ID", "Title"));
+				System.out.println(String.format("%1$-13s|%2$-30s\n", "Ad ID", "Title"));
 				for (Map<String, String> result : results) {
-					System.out.println(String.format("%1$-13s|%2$-30s", result.get("aid"), result.get("title")));
+					System.out.println(String.format("%1$-13s|%2$-30s\n", result.get("aid"), result.get("title")));
 				}
 				System.out.println();
 			} else { // full mode
-				String str = "%1$-13s|%2$-10s|%3$-10s|%4$-50s|%5$-6s|%6$-25s|%7$s";
+				String str = "%1$-13s|%2$-10s|%3$-10s|%4$-50s|%5$-6s|%6$-25s|%7$s\n";
 				System.out.println(String.format(str, "Ad ID", "Date", "Location", "Title", "Price", "Category", "Description"));
 				for (Map<String, String> result : results) {
 					System.out.println(String.format(str, result.get("aid"), result.get("date"), result.get("loc"), result.get("title"),
