@@ -13,6 +13,11 @@ import java.util.regex.Pattern;
 
 public class Main {
 	
+	static List<String> Alines = new ArrayList<>();
+	static List<String> Dlines = new ArrayList<>();
+	static List<String> Tlines = new ArrayList<>();
+	static List<String> PRlines = new ArrayList<>();
+	
 	public static void main(String[] args) {
 		
 		//check file input
@@ -39,6 +44,12 @@ public class Main {
 				parseLine(line);
 			}
 			fp.close();
+			
+			Files.write(dfile, Dlines, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+			Files.write(pfile, PRlines, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+			Files.write(tfile, Tlines, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+			Files.write(afile, Alines, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -147,7 +158,6 @@ public class Main {
 	private static void terms(String title, String desc, String aid) throws IOException {
 		//CHECK FOR SPICIFIC REGEX
 		//template for creating file or find another on stackoverflow
-		List<String> lines = new ArrayList<>();
 		List<String> terms = new ArrayList<>();
 		
 		String p1 = "&";
@@ -169,21 +179,15 @@ public class Main {
 			}
 			
 		for (String s : terms) {
-			lines.add(s + ":" + aid);
+			Tlines.add(s + ":" + aid);
+			}
+		
 		}
-		
-		
-		Path file = Paths.get("terms.txt");
-		Files.write(file, lines, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-	}
 	
 	private static void pdates(String date, String cat, String loc, String aid) throws IOException {
-		List<String> lines = new ArrayList<>();
 		
-		lines.add(date + ":" + aid + "," + cat + "," + loc);
+		Dlines.add(date + ":" + aid + "," + cat + "," + loc);
 		
-		Path file = Paths.get("pdates.txt");
-		Files.write(file, lines, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 	}
 	
 	private static void prices(String price, String cat, String loc, String aid) throws IOException {
@@ -196,22 +200,13 @@ public class Main {
 			pad = pad + " ";
 		}
 		
-		List<String> lines = new ArrayList<>();
-		
 		//TODO check this for non empty price before price is passed to this function
 		
-		lines.add(pad + price + ":" + aid + "," + cat + "," + loc);
-		
-		Path file = Paths.get("prices.txt");
-		Files.write(file, lines, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-	}
+		PRlines.add(pad + price + ":" + aid + "," + cat + "," + loc);
+		}
 	
-	private static void ads(String aid, String line) throws IOException {
-		List<String> lines = new ArrayList<>();
+	private static void ads(String aid, String line) throws IOException {		
+		Alines.add(aid + ":" + line);
 		
-		lines.add(aid + ":" + line);
-		
-		Path file = Paths.get("ads.txt");
-		Files.write(file, lines, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 	}
 }
