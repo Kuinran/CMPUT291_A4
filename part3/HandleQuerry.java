@@ -24,7 +24,10 @@ public class HandleQuerry {
 		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
 		        OperationStatus.SUCCESS) {
 		    	//System.out.println("If this prints, we are iterating through the price data");
-		        String keyPrice = new String(foundKey.getData(), "UTF-8");
+		        Pattern p = Pattern.compile("[A-Za-z0-9]*");
+		     
+		    	String keyPrice = new String(foundKey.getData(), "UTF-8");
+		    	keyPrice = keyPrice.replaceAll("\\s","");
 		        String dataString = new String(foundData.getData(), "UTF-8");
 		        String[] parts = dataString.split("\\s*,\\s*");
 		        String aid = parts[0];
