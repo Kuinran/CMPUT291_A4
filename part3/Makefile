@@ -1,19 +1,17 @@
 GS = -g
-JC = javac
+JC = javac -classpath /usr/share/java/db-5.3.28.jar
 
 .SUFFIXES: .java .class
 .java.class:
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
-	Driver.java \
 	Main_States.java \
-	Main.java \
+	Query_Type.java \
 	Formats.java \
 	OpenDB.java \
-	Query_Type.java
-
-CLASSPATH = /usr/share/java/db-5.3.28.jar
+	Driver.java \
+	Main.java
 
 default: classes
 
