@@ -218,9 +218,115 @@ public class HandleQuerry {
 	public HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
 		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
 		Cursor myCursor = null;
-		Database LocationData = Dataarray[2];
 		Database addData = Dataarray[0];
 		
+		try {
+		    myCursor = addData.openCursor(null, null);
+		    // cursors return every record as a pair of objects of class DatabaseEntry
+		    DatabaseEntry foundKey = new DatabaseEntry();
+		    DatabaseEntry foundData = new DatabaseEntry();
+		 
+		    // A call to getNext() fetches the next record, until it returns
+		    // with a status that is not OperationStatus.SUCCESS
+			//each iteration the cursor points to, KEY:DATA
+		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
+		        OperationStatus.SUCCESS) {
+		    	
+		    	String keyAdd = new String(foundKey.getData(), "UTF-8");
+		    	keyAdd = keyAdd.replaceAll("\\s","");
+		        String dataString = new String(foundData.getData(), "UTF-8");
+		        Pattern ploc = Pattern.compile(Pattern.quote("<loc>") + "(.*?)" + Pattern.quote("</loc>"));
+		        Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
+		        
+		        Matcher mloc = ploc.matcher(dataString);
+		        Matcher madd = padd.matcher(dataString);
+		        if(mloc.find() && madd.find()) {
+		        	if(mloc.group(1).compareTo(loc) == 0) {
+		        		HashMap<String, String> map;
+		        		if(full) {
+		        			map = getFull(madd.group(1),addData);
+		        		}
+		        		
+		        		else {
+		        			map = getBrief(madd.group(1),addData);
+		        		}
+		        		hashout.add(map);
+		        	}
+		        }
+		    	
+		    	}
+		    return hashout;
+		}
+		catch(Exception e) {
+			System.err.println("Error accessing the database: " + e);
+		}
+		finally {
+		    try {
+		        if (myCursor != null) {
+		            myCursor.close();
+		        }
+		    } catch(DatabaseException dbe) {
+		        System.err.println("Error in close: " + dbe.toString());
+		    }
+		}
+		System.out.println("We are about to return null");  
+		return null;
+	}
+	public HashSet<HashMap<String,String>> getCategory(String category,Database[] Dataarray,boolean full) {
+		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
+		Cursor myCursor = null;
+		Database catData = Dataarray[0];
+		
+		try {
+		    myCursor = catData.openCursor(null, null);
+		    // cursors return every record as a pair of objects of class DatabaseEntry
+		    DatabaseEntry foundKey = new DatabaseEntry();
+		    DatabaseEntry foundData = new DatabaseEntry();
+		 
+		    // A call to getNext() fetches the next record, until it returns
+		    // with a status that is not OperationStatus.SUCCESS
+			//each iteration the cursor points to, KEY:DATA
+		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
+		        OperationStatus.SUCCESS) {
+		    	
+		    	String keyCat = new String(foundKey.getData(), "UTF-8");
+		    	keyCat = keyCat.replaceAll("\\s","");
+		        String dataString = new String(foundData.getData(), "UTF-8");
+		        Pattern pcat = Pattern.compile(Pattern.quote("<cat>") + "(.*?)" + Pattern.quote("</cat>"));
+		        Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
+		        
+		        Matcher mcat = pcat.matcher(dataString);
+		        Matcher madd = padd.matcher(dataString);
+		        if(mcat.find() && madd.find()) {
+		        	if(mcat.group(1).compareTo(category) == 0) {
+		        		HashMap<String, String> map;
+		        		if(full) {
+		        			map = getFull(madd.group(1),catData);
+		        		}
+		        		
+		        		else {
+		        			map = getBrief(madd.group(1),catData);
+		        		}
+		        		hashout.add(map);
+		        	}
+		        }
+		    	
+		    	}
+		    return hashout;
+		}
+		catch(Exception e) {
+			System.err.println("Error accessing the database: " + e);
+		}
+		finally {
+		    try {
+		        if (myCursor != null) {
+		            myCursor.close();
+		        }
+		    } catch(DatabaseException dbe) {
+		        System.err.println("Error in close: " + dbe.toString());
+		    }
+		}
+		System.out.println("We are about to return null");  
 		return null;
 	}
 }
