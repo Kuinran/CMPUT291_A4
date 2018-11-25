@@ -149,9 +149,9 @@ public class Driver {
 			case DATE:
 				//System.out.println("Sending date query " + expression.arg);
 				if (format == Formats.FULL) {
-
+					temp = HandleQuerry.getDate(expression.op, expression.arg, dbs, true);
 				} else {
-					
+					temp = HandleQuerry.getDate(expression.op, expression.arg, dbs, false);
 				}
 				break;
 			case CAT:
