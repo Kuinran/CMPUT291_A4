@@ -232,11 +232,17 @@ public class Main {
 		if(price == null) {
 			return;
 		}
+		int j = 12 - price.length();
+		String pad = "";
+		for(int i = 0; i < j; i++) {
+			pad = pad + " ";
+		}
+		
 		List<String> lines = new ArrayList<>();
 		
 		//TODO check this for non empty price before price is passed to this function
 		
-		lines.add(price + ":" + aid + "," + cat + "," + loc);
+		lines.add(pad + price + ":" + aid + "," + cat + "," + loc);
 		
 		Path file = Paths.get("prices.txt");
 		Files.write(file, lines, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
