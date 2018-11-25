@@ -134,6 +134,9 @@ public class HandleQuerry {
 						aidCursor.close();
 						return map;
 					}
+					else {
+						System.out.println("If this message prints, failed to add the hashmap to the set. check regex");
+					}
     		
 					}
 				}
@@ -157,6 +160,7 @@ public class HandleQuerry {
 				aidCursor = addData.openCursor(null, null);
 				while (aidCursor.getNext(foundKey2, foundData2, LockMode.DEFAULT) ==
 				OperationStatus.SUCCESS) {
+					System.out.println("If this prints, we are iterating through price database");
 					//each iteration the cursor points to, KEY:DATA
 					String keyAdd = new String(foundKey2.getData(), "UTF-8");
 					String dataString2 = new String(foundData2.getData(), "UTF-8");
@@ -200,6 +204,14 @@ public class HandleQuerry {
 			    System.err.println("Error accessing the database: " + e);
 			}
 			
+		return null;
+	}
+	public HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
+		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
+		Cursor myCursor = null;
+		Database LocationData = Dataarray[2];
+		Database addData = Dataarray[0];
+		
 		return null;
 	}
 }
