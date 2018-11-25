@@ -199,7 +199,7 @@ public class Main {
 		for(int i = 0; i < j; i++) {
 			pad = pad + " ";
 		}
-		
+		//
 		//TODO check this for non empty price before price is passed to this function
 		
 		PRlines.add(pad + price + ":" + aid + "," + cat + "," + loc);
