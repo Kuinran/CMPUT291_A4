@@ -127,7 +127,7 @@ public class Driver {
 			// uses a function to search db then saves results in a set
 			switch(expression.type) {
 			case PRICE:
-				//System.out.println("Sending price query " + expression.arg);
+				System.out.println("Sending price query " + expression.arg);
 				if (format == Formats.FULL) {
 					temp = HandleQuerry.getPrice(expression.op, Integer.parseInt(expression.arg), dbs, true);
 					System.out.println(temp.toString() + temp.isEmpty());

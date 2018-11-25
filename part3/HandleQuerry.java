@@ -6,7 +6,7 @@ import java.util.regex.*;
 public class HandleQuerry {
 	
 	//Dataaarray = {addData,dateData,PriceData,termsData}
-	public HashSet<HashMap<String,String>> getPrice(String op, int price, Database[] Dataarray,boolean full) {
+	public static HashSet<HashMap<String,String>> getPrice(String op, int price, Database[] Dataarray,boolean full) {
 		System.out.println("getPrice Reached!!");
 		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
 		Cursor myCursor = null;
@@ -112,7 +112,7 @@ public class HandleQuerry {
 		}
 		return hashout;
 	}
-	public HashMap<String,String> getBrief(String aid, Database addData) {
+	public static HashMap<String,String> getBrief(String aid, Database addData) {
 		HashMap<String, String> map = new HashMap<>(); 
 		map.put("aid", aid);
 	
@@ -149,7 +149,7 @@ public class HandleQuerry {
 		return null;
 	}
 	
-	public HashMap<String,String> getFull(String aid, Database addData){
+	public static HashMap<String,String> getFull(String aid, Database addData){
 		HashMap<String, String> map = new HashMap<>(); 
 		map.put("aid", aid);
 		
