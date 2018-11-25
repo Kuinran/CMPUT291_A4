@@ -165,17 +165,17 @@ public class Driver {
 			case TERM:
 				//System.out.println("Sending term query " + expression.arg);
 				if (format == Formats.FULL) {
-					
+					temp = HandleQuerry.getTerm(expression.arg, dbs, true, false);
 				} else {
-					
+					temp = HandleQuerry.getTerm(expression.arg, dbs, false, false);
 				}
 				break;
 			case PARTTERM:
 				//System.out.println("Sending partial term query " + expression.arg);
 				if (format == Formats.FULL) {
-					
+					temp = HandleQuerry.getTerm(expression.arg, dbs, true, true);
 				} else {
-					
+					temp = HandleQuerry.getTerm(expression.arg, dbs, false, true);
 				}
 				break;
 			}
