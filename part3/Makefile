@@ -6,14 +6,14 @@ JC = javac
 	$(JC) $(JFLAGS) $*.java
 
 CLASSES = \
-				Driver.java \
-				Main_States.java \
-				Main.java \
-				Formats.java \
-				OpenDB.java \
-				Query_Type.java
+	Driver.java \
+	Main_States.java \
+	Main.java \
+	Formats.java \
+	OpenDB.java \
+	Query_Type.java
 
-CLASSPATH = ./usr/share/java/db-5.3.28.jar
+CLASSPATH = /usr/share/java/db-5.3.28.jar
 
 default: classes
 
