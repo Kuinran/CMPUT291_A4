@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sleepycat.db.*;
+
 public class Driver {
 	Main_States state;
 	Formats format;
@@ -15,6 +17,7 @@ public class Driver {
 	Pattern pattern;
 	List<Expression> expressions;
 	Set<Map<String, String>> results;
+	Database[] dbs;
 	
 	private class Expression {
 		public Query_Type type;
@@ -29,9 +32,10 @@ public class Driver {
 	
 	Driver(Scanner scanner) {
 		// initialize indicies and stuff
-		state = Main_States.PARSING;
-		format = Formats.BRIEF;
+		this.state = Main_States.PARSING;
+		this.format = Formats.BRIEF;
 		this.scanner = scanner;
+		this.dbs = OpenDB.Open();
 		expressions = new ArrayList<Expression>();
 		pattern = Pattern.compile(createRegex());
 	}
@@ -63,12 +67,17 @@ public class Driver {
 				break;
 			}
 		}
+		for (Database db : dbs) {
+			OpenDB.Close(db);
+		}
 	}
 	
 	
 	private boolean processParse() {
+		System.out.println("Enter your query or type <Quit> to exit the program");
 		String input = scanner.nextLine().toLowerCase();
 		if (input.compareTo("quit") == 0) {
+			state = Main_States.QUIT;
 			return false;
 		}
 		Pattern outType = Pattern.compile("output=(brief|full)");
@@ -106,28 +115,29 @@ public class Driver {
 	}
 	
 	private void processQuery() {
+		System.out.println("Searching for results");
 		results = new HashSet<Map<String, String>>();
 		Set<Map<String, String>> temp = new HashSet<Map<String, String>>();
 		for (Expression expression : expressions) {
 			// uses a function to search db then saves results in a set
 			switch(expression.type) {
 			case PRICE:
-				System.out.println("Sending price query " + expression.arg);
+				//System.out.println("Sending price query " + expression.arg);
 				break;
 			case LOCATION:
-				System.out.println("Sending location query " + expression.arg);
+				//System.out.println("Sending location query " + expression.arg);
 				break;
 			case DATE:
-				System.out.println("Sending date query " + expression.arg);
+				//System.out.println("Sending date query " + expression.arg);
 				break;
 			case CAT:
-				System.out.println("Sending cat query " + expression.arg);
+				//System.out.println("Sending cat query " + expression.arg);
 				break;
 			case TERM:
-				System.out.println("Sending term query " + expression.arg);
+				//System.out.println("Sending term query " + expression.arg);
 				break;
 			case PARTTERM:
-				System.out.println("Sending partial term query " + expression.arg);
+				//System.out.println("Sending partial term query " + expression.arg);
 				break;
 			}
 			if (results.isEmpty()) { // if no results results are what were returned
@@ -139,17 +149,22 @@ public class Driver {
 	}
 	
 	private void processPrint() {
-		if (format == Formats.BRIEF) { // brief mode
-			for (Map<String, String> result : results) {
-				System.out.println(String.format("%1$-13s|%2$-30s", "Ad ID", "Title"));
-				System.out.println(String.format("%1$-13s|%2$-30s", result.get("aid"), result.get("title")));
-			}
-		} else { // full mode
-			String str = "%1$-13s|%2$-10s|%3$-10s|%4$-30s|%5$-6s|%s";
-			for (Map<String, String> result : results) {
-				System.out.println(String.format(str, "Ad ID", "Date", "Location", "Title", "Price", "Description"));
-				System.out.println(String.format(str, result.get("aid"), result.get("date"), result.get("loc"), result.get("title"),
-						result.get("price"), result.get("desc")));
+		if (results.isEmpty()) {
+			System.out.println("No results were found");
+		} else {
+			System.out.println("Printing Results...");
+			if (format == Formats.BRIEF) { // brief mode
+				for (Map<String, String> result : results) {
+					System.out.println(String.format("%1$-13s|%2$-30s", "Ad ID", "Title"));
+					System.out.println(String.format("%1$-13s|%2$-30s", result.get("aid"), result.get("title")));
+				}
+			} else { // full mode
+				String str = "%1$-13s|%2$-10s|%3$-10s|%4$-30s|%5$-6s|%s";
+				for (Map<String, String> result : results) {
+					System.out.println(String.format(str, "Ad ID", "Date", "Location", "Title", "Price", "Description"));
+					System.out.println(String.format(str, result.get("aid"), result.get("date"), result.get("loc"), result.get("title"),
+							result.get("price"), result.get("desc")));
+				}
 			}
 		}
 	}
