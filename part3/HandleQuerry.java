@@ -2,6 +2,7 @@ import com.sleepycat.db.*;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.*;
@@ -170,6 +171,7 @@ public class HandleQuerry {
 					//System.out.println("Second stage, iterating through getFull");
 					//each iteration the cursor points to, KEY:DATA
 					String keyAdd = new String(foundKey2.getData(), "UTF-8");
+					System.out.println(keyAdd);
 					String dataString2 = new String(foundData2.getData(), "UTF-8");
 					if(aid.compareTo(keyAdd) == 0) {
 						//System.out.println("aid match found");
@@ -334,6 +336,7 @@ public class HandleQuerry {
 		Database pdate = dataArray[1];
 		HashSet<HashMap<String, String>> set = new HashSet<HashMap<String, String>>();
 		HashMap<String, String> map = new HashMap<String, String>();
+		ArrayList<String> aids = new ArrayList<String>();
 		Cursor cursor = null;
 		try {
 			cursor = pdate.openCursor(null, null);
@@ -348,12 +351,7 @@ public class HandleQuerry {
 					String sData = new String(fData.getData(), "UTF-8");
 					String aid = sData.split(",")[0];
 					// add entry
-					if (full) {
-						map = getFull(aid, dataArray[0]);
-					} else {
-						map = getBrief(aid, dataArray[0]);
-					}
-	        		set.add(map);
+					aids.add(aid);
 					// while entries have same key
 					//System.out.println("searching more entries");
 					while (cursor.getNextDup(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
@@ -362,24 +360,14 @@ public class HandleQuerry {
 						sData = new String(fData.getData(), "UTF-8");
 						aid = sData.split(",")[0];
 						// add entry
-						if (full) {
-							map = getFull(aid, dataArray[0]);
-						} else {
-							map = getBrief(aid, dataArray[0]);
-						}
-		        		set.add(map);
+						aids.add(aid);
 					}
 				} else if (op.compareTo(">=") == 0) {
 					// extract aid
 					String sData = new String(fData.getData(), "UTF-8");
 					String aid = sData.split(",")[0];
 					// add entry
-					if (full) {
-						map = getFull(aid, dataArray[0]);
-					} else {
-						map = getBrief(aid, dataArray[0]);
-					}
-	        		set.add(map);
+					aids.add(aid);
 	        		// TODO: test to see if arg is greater than maximal value
 					// while not at end
 					while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
@@ -387,24 +375,14 @@ public class HandleQuerry {
 						sData = new String(fData.getData(), "UTF-8");
 						aid = sData.split(",")[0];
 						// add entry
-						if (full) {
-							map = getFull(aid, dataArray[0]);
-						} else {
-							map = getBrief(aid, dataArray[0]);
-						}
-		        		set.add(map);
+						aids.add(aid);
 					}
 				} else if (op.compareTo("<=") == 0) {
 					// extract aid
 					String sData = new String(fData.getData(), "UTF-8");
 					String aid = sData.split(",")[0];
 					// add entry
-					if (full) {
-						map = getFull(aid, dataArray[0]);
-					} else {
-						map = getBrief(aid, dataArray[0]);
-					}
-	        		set.add(map);
+					aids.add(aid);
 	        		System.out.println("Moving to next non-dupe");
 					cursor.getNextNoDup(fKey, fData, LockMode.DEFAULT);
 					System.out.println("Looking back");
@@ -414,12 +392,7 @@ public class HandleQuerry {
 						sData = new String(fData.getData(), "UTF-8");
 						aid = sData.split(",")[0];
 						// add entry
-						if (full) {
-							map = getFull(aid, dataArray[0]);
-						} else {
-							map = getBrief(aid, dataArray[0]);
-						}
-		        		set.add(map);
+						aids.add(aid);
 					}
 				} else if (op.compareTo(">") == 0) {
 					String sData, aid;
@@ -427,22 +400,12 @@ public class HandleQuerry {
 						sData = new String(fData.getData(), "UTF-8");
 						aid = sData.split(",")[0];
 						// add entry
-						if (full) {
-							map = getFull(aid, dataArray[0]);
-						} else {
-							map = getBrief(aid, dataArray[0]);
-						}
-		        		set.add(map);
+						aids.add(aid);
 						while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 							sData = new String(fData.getData(), "UTF-8");
 							aid = sData.split(",")[0];
 							// add entry
-							if (full) {
-								map = getFull(aid, dataArray[0]);
-							} else {
-								map = getBrief(aid, dataArray[0]);
-							}
-			        		set.add(map);
+							aids.add(aid);
 						}
 					}
 	        		// TODO: test to see if arg is greater than maximal value
@@ -452,12 +415,7 @@ public class HandleQuerry {
 						sData = new String(fData.getData(), "UTF-8");
 						aid = sData.split(",")[0];
 						// add entry
-						if (full) {
-							map = getFull(aid, dataArray[0]);
-						} else {
-							map = getBrief(aid, dataArray[0]);
-						}
-		        		set.add(map);
+						aids.add(aid);
 					}
 				}
 			} else { // misses check bounds
@@ -472,22 +430,12 @@ public class HandleQuerry {
 						sData = new String(fData.getData(), "UTF-8");
 						aid = sData.split(",")[0];
 						// add entry
-						if (full) {
-							map = getFull(aid, dataArray[0]);
-						} else {
-							map = getBrief(aid, dataArray[0]);
-						}
-		        		set.add(map);
+						aids.add(aid);
 		        		while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 							sData = new String(fData.getData(), "UTF-8");
 							aid = sData.split(",")[0];
 							// add entry
-							if (full) {
-								map = getFull(aid, dataArray[0]);
-							} else {
-								map = getBrief(aid, dataArray[0]);
-							}
-			        		set.add(map);
+							aids.add(aid);
 		        		}
 					}
 				} else if (op.compareTo("<") == 0) { // search down from top
@@ -498,26 +446,18 @@ public class HandleQuerry {
 						sData = new String(fData.getData(), "UTF-8");
 						aid = sData.split(",")[0];
 						// add entry
-						if (full) {
-							map = getFull(aid, dataArray[0]);
-						} else {
-							map = getBrief(aid, dataArray[0]);
-						}
-		        		set.add(map);
+						aids.add(aid);
 		        		while (cursor.getPrev(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 							sData = new String(fData.getData(), "UTF-8");
 							aid = sData.split(",")[0];
 							// add entry
-							if (full) {
-								map = getFull(aid, dataArray[0]);
-							} else {
-								map = getBrief(aid, dataArray[0]);
-							}
-			        		set.add(map);
+							aids.add(aid);
 		        		}
 					}
 				}
 			}
+			//System.out.println(aids.toString());
+			getData(set, aids, dataArray, full);
 		} catch (Exception e) {
 			System.err.println("Error");
 			e.printStackTrace();
@@ -531,6 +471,40 @@ public class HandleQuerry {
 		}
 		 
 		return set;
+	}
+	
+	public static void getData(HashSet<HashMap<String, String>> set, ArrayList<String> aids, Database[] dbs, boolean full) {
+		Database ad = dbs[0];
+		Cursor cursor = null;
+		try {
+			cursor = ad.openCursor(null, null);
+			DatabaseEntry fKey = new DatabaseEntry();
+			DatabaseEntry fData = new DatabaseEntry();
+			cursor.getFirst(fKey, fData, LockMode.DEFAULT);
+			String temp = new String(fKey.getData(), "UTF-8").split(":")[0];
+			if (aids.contains(temp)) {
+				System.out.println("checking first part");
+				addData(set, fData, full);
+			}
+			System.out.println("Iterating now");
+			while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+				temp = new String(fKey.getData(), "UTF-8").split(":")[0];
+				//System.out.println(temp);
+				if (aids.contains(temp)) {
+					//System.out.println("Added");
+					addData(set, fData, full);
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Error");
+		} finally {
+			try {
+				cursor.close();
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public static HashSet<HashMap<String, String>> getTerm(String arg, Database[] dataArray, boolean full, boolean partial) {
