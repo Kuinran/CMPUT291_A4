@@ -7,7 +7,7 @@ public class HandleQuerry {
 	
 	//Dataaarray = {addData,dateData,PriceData,termsData}
 	public static HashSet<HashMap<String,String>> getPrice(String op, int price, Database[] Dataarray,boolean full) {
-		System.out.println("getPrice Reached!!");
+		//System.out.println("getPrice Reached!!" + full);
 		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
 		Cursor myCursor = null;
 		Database PriceData = Dataarray[2];
@@ -23,13 +23,17 @@ public class HandleQuerry {
 			//each iteration the cursor points to, KEY:DATA
 		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
 		        OperationStatus.SUCCESS) {
-		    	System.out.println("If this prints, we are iterating through the price data");
-		        String keyPrice = new String(foundKey.getData(), "UTF-8");
+		    	//System.out.println("If this prints, we are iterating through the price data");
+		        Pattern p = Pattern.compile("[A-Za-z0-9]*");
+		     
+		    	String keyPrice = new String(foundKey.getData(), "UTF-8");
+		    	//System.out.println(keyPrice);
+		    	keyPrice = keyPrice.replaceAll("\\s","");
 		        String dataString = new String(foundData.getData(), "UTF-8");
 		        String[] parts = dataString.split("\\s*,\\s*");
 		        String aid = parts[0];
-		        System.out.println("The aid is: " + aid);
-		        if(op == ">") {
+		        //System.out.println("The aid is: " + aid);
+		        if(op.compareTo(">") == 0) {
 		        	if(Integer.parseInt(keyPrice) > price) {
 		        		
 		        		HashMap<String, String> map;
@@ -45,7 +49,7 @@ public class HandleQuerry {
 		        
 		        }
 		        
-		        else if(op == ">=") {
+		        else if(op.compareTo(">=") == 0) {
 		        	if(Integer.parseInt(keyPrice) >= price) {
 		        		HashMap<String, String> map;
 		        		if(full) {
@@ -59,7 +63,7 @@ public class HandleQuerry {
 		        	}
 		        }
 		    
-		        else if(op == "<") {
+		        else if(op.compareTo("<") == 0) {
 		        	if(Integer.parseInt(keyPrice) < price) {
 		        		HashMap<String, String> map;
 		        		if(full) {
@@ -73,7 +77,7 @@ public class HandleQuerry {
 		        	}
 		        }
 		        
-		        else if(op == "<=") {
+		        else if(op.compareTo("<=") == 0) {
 		        	if(Integer.parseInt(keyPrice) <= price) {
 		        		HashMap<String, String> map;
 		        		if(full) {
@@ -90,6 +94,7 @@ public class HandleQuerry {
 		        	if(Integer.parseInt(keyPrice) == price) {
 		        		HashMap<String, String> map;
 		        		if(full) {
+		        			//System.out.println("Hello?");
 		        			map = getFull(aid, addData);
 		        		}
 		        		else {
@@ -127,7 +132,7 @@ public class HandleQuerry {
 				OperationStatus.SUCCESS) {
 					String keyAdd = new String(foundKey2.getData(), "UTF-8");
 					String dataString2 = new String(foundData2.getData(), "UTF-8");
-					if(aid == keyAdd) {
+					if(aid.compareTo(keyAdd) == 0) {
 						//TODO: Michael put this.Verify if it works
 							Pattern p = Pattern.compile(Pattern.quote("<ti>") + "(.*?)" + Pattern.quote("</ti>"));
 							Matcher m = p.matcher(dataString2);
@@ -162,11 +167,12 @@ public class HandleQuerry {
 				aidCursor = addData.openCursor(null, null);
 				while (aidCursor.getNext(foundKey2, foundData2, LockMode.DEFAULT) ==
 				OperationStatus.SUCCESS) {
-					System.out.println("Second stage, iterating through getFull");
+					//System.out.println("Second stage, iterating through getFull");
 					//each iteration the cursor points to, KEY:DATA
 					String keyAdd = new String(foundKey2.getData(), "UTF-8");
 					String dataString2 = new String(foundData2.getData(), "UTF-8");
-					if(aid == keyAdd) {
+					if(aid.compareTo(keyAdd) == 0) {
+						//System.out.println("aid match found");
 						//TODO: Michael put this.Verify if it works
 							Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
 							Pattern pdate = Pattern.compile(Pattern.quote("<date>") + "(.*?)" + Pattern.quote("</date>"));
@@ -194,6 +200,7 @@ public class HandleQuerry {
 								map.put("desc",mdesc.group(1));
 								map.put("price",mprice.group(1));
 								aidCursor.close();
+								//System.out.println(map.toString());
 								return map;
 							}
 							else {
@@ -206,14 +213,120 @@ public class HandleQuerry {
 			    System.err.println("Error accessing the database: " + e);
 			}
 			System.out.println("We are about to return null");
-		return null;
+		return map;
 	}
-	public HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
+	public static HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
 		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
 		Cursor myCursor = null;
-		Database LocationData = Dataarray[2];
 		Database addData = Dataarray[0];
 		
+		try {
+		    myCursor = addData.openCursor(null, null);
+		    // cursors return every record as a pair of objects of class DatabaseEntry
+		    DatabaseEntry foundKey = new DatabaseEntry();
+		    DatabaseEntry foundData = new DatabaseEntry();
+		 
+		    // A call to getNext() fetches the next record, until it returns
+		    // with a status that is not OperationStatus.SUCCESS
+			//each iteration the cursor points to, KEY:DATA
+		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
+		        OperationStatus.SUCCESS) {
+		    	
+		    	String keyAdd = new String(foundKey.getData(), "UTF-8");
+		    	keyAdd = keyAdd.replaceAll("\\s","");
+		        String dataString = new String(foundData.getData(), "UTF-8");
+		        Pattern ploc = Pattern.compile(Pattern.quote("<loc>") + "(.*?)" + Pattern.quote("</loc>"));
+		        Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
+		        
+		        Matcher mloc = ploc.matcher(dataString);
+		        Matcher madd = padd.matcher(dataString);
+		        if(mloc.find() && madd.find()) {
+		        	if(mloc.group(1).compareTo(loc) == 0) {
+		        		HashMap<String, String> map;
+		        		if(full) {
+		        			map = getFull(madd.group(1),addData);
+		        		}
+		        		
+		        		else {
+		        			map = getBrief(madd.group(1),addData);
+		        		}
+		        		hashout.add(map);
+		        	}
+		        }
+		    	
+		    	}
+		    return hashout;
+		}
+		catch(Exception e) {
+			System.err.println("Error accessing the database: " + e);
+		}
+		finally {
+		    try {
+		        if (myCursor != null) {
+		            myCursor.close();
+		        }
+		    } catch(DatabaseException dbe) {
+		        System.err.println("Error in close: " + dbe.toString());
+		    }
+		}
+		System.out.println("We are about to return null");  
+		return null;
+	}
+	public static HashSet<HashMap<String,String>> getCategory(String category,Database[] Dataarray,boolean full) {
+		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
+		Cursor myCursor = null;
+		Database catData = Dataarray[0];
+		
+		try {
+		    myCursor = catData.openCursor(null, null);
+		    // cursors return every record as a pair of objects of class DatabaseEntry
+		    DatabaseEntry foundKey = new DatabaseEntry();
+		    DatabaseEntry foundData = new DatabaseEntry();
+		 
+		    // A call to getNext() fetches the next record, until it returns
+		    // with a status that is not OperationStatus.SUCCESS
+			//each iteration the cursor points to, KEY:DATA
+		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
+		        OperationStatus.SUCCESS) {
+		    	
+		    	String keyCat = new String(foundKey.getData(), "UTF-8");
+		    	keyCat = keyCat.replaceAll("\\s","");
+		        String dataString = new String(foundData.getData(), "UTF-8");
+		        Pattern pcat = Pattern.compile(Pattern.quote("<cat>") + "(.*?)" + Pattern.quote("</cat>"));
+		        Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
+		        
+		        Matcher mcat = pcat.matcher(dataString);
+		        Matcher madd = padd.matcher(dataString);
+		        if(mcat.find() && madd.find()) {
+		        	if(mcat.group(1).compareTo(category) == 0) {
+		        		HashMap<String, String> map;
+		        		if(full) {
+		        			map = getFull(madd.group(1),catData);
+		        		}
+		        		
+		        		else {
+		        			map = getBrief(madd.group(1),catData);
+		        		}
+		        		hashout.add(map);
+		        	}
+		        }
+		    	
+		    	}
+		    return hashout;
+		}
+		catch(Exception e) {
+			System.err.println("Error accessing the database: " + e);
+		}
+		finally {
+		    try {
+		        if (myCursor != null) {
+		            myCursor.close();
+		        }
+		    } catch(DatabaseException dbe) {
+		        System.err.println("Error in close: " + dbe.toString());
+		    }
+		}
+		System.out.println("We are about to return null");  
 		return null;
 	}
 }
