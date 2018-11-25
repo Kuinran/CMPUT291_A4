@@ -10,8 +10,14 @@ public class OpenDB {
 		
 		try {
 			DatabaseConfig dbConfig = new DatabaseConfig();
-			dbConfig.setAllowCreate(true);
-			ad = new Database ("ad.idx", null, dbConfig);
+			DatabaseConfig dbConfigH = new DatabaseConfig();
+			
+			dbConfig.setType(DatabaseType.BTREE);
+			dbConfigH.setType(DatabaseType.HASH);
+			//dbConfig.setSortedDuplicates(true);
+			//dbConfigH.setSortedDuplicates(true);
+			
+			ad = new Database ("ad.idx", null, dbConfigH);
 			date = new Database("da.idx", null, dbConfig);
 			price = new Database("pr.idx", null, dbConfig);
 			terms = new Database("te.idx", null, dbConfig);
