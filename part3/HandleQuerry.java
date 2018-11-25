@@ -241,9 +241,11 @@ public class HandleQuerry {
 			    DatabaseEntry foundData = new DatabaseEntry();
 			    foundKey.setData(loc.getBytes());
 			    foundKey.setSize(loc.length());
-			    
+			    System.out.println("This is the location:" + loc);
 			    if(myCursor.getSearchKey(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
-		    	String keyAdd = new String(foundKey.getData(), "UTF-8");
+		    	System.out.println("The keys are a match!");
+			    	String keyAdd = new String(foundKey.getData(), "UTF-8");
+			    	System.out.println("This is the key:" + keyAdd);
 		    	keyAdd = keyAdd.replaceAll("\\s","");
 		        String dataString = new String(foundData.getData(), "UTF-8");
 		        Pattern ploc = Pattern.compile(Pattern.quote("<loc>") + "(.*?)" + Pattern.quote("</loc>"));
