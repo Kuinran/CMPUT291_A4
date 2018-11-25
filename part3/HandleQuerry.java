@@ -368,10 +368,11 @@ public class HandleQuerry {
 			DatabaseEntry fKey = new DatabaseEntry();
 			DatabaseEntry fData = new DatabaseEntry();
 			while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
-				String sData = new String(fData.getData(), "UTF-8");
+				String sData = new String(fData.getData(), "UTF-8").toLowerCase();
 				matcher = pattern.matcher(sData);
 				if (matcher.find()) { // match found retrieve data
 					map = new HashMap<String, String>();
+					sData = new String(fData.getData(), "UTF-8");
 					if (full) {
 						Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
 						Pattern pdate = Pattern.compile(Pattern.quote("<date>") + "(.*?)" + Pattern.quote("</date>"));
