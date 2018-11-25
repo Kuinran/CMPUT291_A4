@@ -143,32 +143,6 @@ public class Main {
 		}
 		
 	}
-	private static String ignoreSpecial(String s) {
-		String p1 = "&";
-		String p2 = ";";
-		Matcher m = Pattern.compile("(" + Pattern.quote(p1) + "(.*?)" + Pattern.quote(p2) + ")").matcher(s);
-		if (!m.find()) {
-			return s;
-		}
-		return s.replaceAll(m.group(1), "");
-	}
-	
-	private static String ParseString(String s) {
-		s = ignoreSpecial(s);
-		//char[] w = s.toCharArray();
-		String sb = "";
-		
-		Matcher m = Pattern.compile("[A-Za-z0-9_-]+").matcher(s);
-		if (m.find()) {
-			sb = m.group();
-		}
-		
-		if (sb.length() <= 2) {
-			return null;
-		}
-		
-		return sb;
-	}
 	
 	private static void terms(String title, String desc, String aid) throws IOException {
 		//CHECK FOR SPICIFIC REGEX
@@ -176,40 +150,24 @@ public class Main {
 		List<String> lines = new ArrayList<>();
 		List<String> terms = new ArrayList<>();
 		
-		if (title.contains(" ")) {
-			String words[] = title.trim().replaceAll("[\\,./]" , " ").split("\\s+");
-			for (int i = 0; i < words.length; i++) {
-				if (words[i].length() > 2) {
-					String join = ParseString(words[i]);
-					if (join != null) {
-						terms.add(join.toLowerCase());
-					}
-				}
-			}
-		} else {
-			String join = ParseString(title);
-			if (join != null) {
-				terms.add(join.toLowerCase());
-			}
-		}
+		String p1 = "&";
+		String p2 = ";";
+		String p3 = "(" + Pattern.quote(p1) + "(.*?)" + Pattern.quote(p2) + ")";
 		
-		if (desc.contains(" ")) {
-			String words[] = desc.trim().replaceAll("[\\,./]" , " ").split("\\s+");
-			for (int i = 0; i < words.length; i++) {
-				if (words[i].length() > 2) {
-					String join = ParseString(words[i]);
-					if (join != null) {
-						terms.add(join.toLowerCase());
-					}
+		String words[] = title.trim().replaceAll(p3, "").replaceAll("[^A-Za-z0-9_-]" , " ").split("\\s+");
+			for (String w : words) {
+				if (w.length() > 2) {
+						terms.add(w.toLowerCase());
 				}
 			}
-		} else {
-			String join = ParseString(desc);
-			if (join != null) {
-				terms.add(join.toLowerCase());
+	
+		String dwords[] = desc.trim().replaceAll(p3, "").replaceAll("[^A-Za-z0-9_-]" , " ").split("\\s+");
+			for (String w : dwords) {
+				if (w.length() > 2) {
+					terms.add(w.toLowerCase());
+				}
 			}
-		}
-					
+			
 		for (String s : terms) {
 			lines.add(s + ":" + aid);
 		}
