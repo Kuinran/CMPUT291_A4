@@ -133,7 +133,6 @@ public class HandleQuerry {
 					String keyAdd = new String(foundKey2.getData(), "UTF-8");
 					String dataString2 = new String(foundData2.getData(), "UTF-8");
 					if(aid.compareTo(keyAdd) == 0) {
-						//TODO: Michael put this.Verify if it works
 							Pattern p = Pattern.compile(Pattern.quote("<ti>") + "(.*?)" + Pattern.quote("</ti>"));
 							Matcher m = p.matcher(dataString2);
 					if(m.find()) {
@@ -173,7 +172,6 @@ public class HandleQuerry {
 					String dataString2 = new String(foundData2.getData(), "UTF-8");
 					if(aid.compareTo(keyAdd) == 0) {
 						//System.out.println("aid match found");
-						//TODO: Michael put this.Verify if it works
 							Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
 							Pattern pdate = Pattern.compile(Pattern.quote("<date>") + "(.*?)" + Pattern.quote("</date>"));
 							Pattern ploc = Pattern.compile(Pattern.quote("<loc>") + "(.*?)" + Pattern.quote("</loc>"));
@@ -212,7 +210,7 @@ public class HandleQuerry {
 			catch(Exception e) {
 			    System.err.println("Error accessing the database: " + e);
 			}
-			System.out.println("We are about to return null");
+			//System.out.println("We are about to return null");
 		return map;
 	}
 	public static HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
@@ -237,34 +235,35 @@ public class HandleQuerry {
 		    while (true) {
 		    	//myCursor.getSearchKey(foundKey.setData(data);, foundData, LockMode.DEFAULT) ==
 				       // OperationStatus.SUCCESS
+
 		    	DatabaseEntry foundKey = new DatabaseEntry(loc.getBytes("UTF-8"));
 			    DatabaseEntry foundData = new DatabaseEntry();
 			    
 			    System.out.println("This is the location:" + loc);
 			    if(myCursor.getSearchKey(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
-		    	System.out.println("The keys are a match!");
-			    	String keyAdd = new String(foundKey.getData(), "UTF-8");
-			    	System.out.println("This is the key:" + keyAdd);
-		    	keyAdd = keyAdd.replaceAll("\\s","");
-		        String dataString = new String(foundData.getData(), "UTF-8");
-		        Pattern ploc = Pattern.compile(Pattern.quote("<loc>") + "(.*?)" + Pattern.quote("</loc>"));
-		        Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
-		        
-		        Matcher mloc = ploc.matcher(dataString);
-		        Matcher madd = padd.matcher(dataString);
-		        if(mloc.find() && madd.find()) {
-		        	if(mloc.group(1).compareTo(loc) == 0) {
-		        		HashMap<String, String> map;
-		        		if(full) {
-		        			map = getFull(madd.group(1),addData);
-		        		}
-		        		
-		        		else {
-		        			map = getBrief(madd.group(1),addData);
-		        		}
-		        		hashout.add(map);
-		        	}
-		        }
+			    	System.out.println("The keys are a match!");
+				    String keyAdd = new String(foundKey.getData(), "UTF-8");
+				    System.out.println("This is the key:" + keyAdd);
+			    	keyAdd = keyAdd.replaceAll("\\s","");
+			        String dataString = new String(foundData.getData(), "UTF-8");
+			        Pattern ploc = Pattern.compile(Pattern.quote("<loc>") + "(.*?)" + Pattern.quote("</loc>"));
+			        Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
+			        
+			        Matcher mloc = ploc.matcher(dataString);
+			        Matcher madd = padd.matcher(dataString);
+			        if(mloc.find() && madd.find()) {
+			        	if(mloc.group(1).compareTo(loc) == 0) {
+			        		HashMap<String, String> map;
+			        		if(full) {
+			        			map = getFull(madd.group(1),addData);
+			        		}
+			        		
+			        		else {
+			        			map = getBrief(madd.group(1),addData);
+			        		}
+			        		hashout.add(map);
+			        	}
+			        }
 		    	
 		    	}
 			    else {
@@ -350,5 +349,81 @@ public class HandleQuerry {
 		 
 		 
 		return null;
+	}
+	
+	public static HashSet<HashMap<String, String>> getTerm(String arg, Database[] dataArray, boolean full, boolean partial) {
+		Database ads = dataArray[0];
+		HashSet<HashMap<String, String>> set = new HashSet<HashMap<String, String>>();
+		HashMap<String, String> map = new HashMap<String, String>();
+		Cursor cursor = null;
+		Pattern pattern;
+		if (partial) {
+			pattern = Pattern.compile(String.format("<ti(>|.*\\s)%s.*<\\/ti>|<desc(>|.*\\s)%s.*<\\/desc>", arg, arg));
+		} else {
+			pattern = Pattern.compile(String.format("<ti(>|.*\\s)%s\\s.*<\\/ti>|<desc(>|.*\\s)%s\\s.*<\\/desc>", arg, arg));
+		}
+		Matcher matcher = null;
+		try {
+			cursor = ads.openCursor(null, null);
+			DatabaseEntry fKey = new DatabaseEntry();
+			DatabaseEntry fData = new DatabaseEntry();
+			while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+				String sData = new String(fData.getData(), "UTF-8");
+				matcher = pattern.matcher(sData);
+				if (matcher.find()) { // match found retrieve data
+					map = new HashMap<String, String>();
+					if (full) {
+						Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
+						Pattern pdate = Pattern.compile(Pattern.quote("<date>") + "(.*?)" + Pattern.quote("</date>"));
+						Pattern ploc = Pattern.compile(Pattern.quote("<loc>") + "(.*?)" + Pattern.quote("</loc>"));
+						Pattern pcat = Pattern.compile(Pattern.quote("<cat>") + "(.*?)" + Pattern.quote("</cat>"));
+						Pattern pti = Pattern.compile(Pattern.quote("<ti>") + "(.*?)" + Pattern.quote("</ti>"));
+						Pattern pdesc = Pattern.compile(Pattern.quote("<desc>") + "(.*?)" + Pattern.quote("</desc>"));
+						Pattern pprice = Pattern.compile(Pattern.quote("<price>") + "(.*?)" + Pattern.quote("</price>"));
+						
+						Matcher madd = padd.matcher(sData);
+						Matcher mdate = pdate.matcher(sData);
+						Matcher mloc = ploc.matcher(sData);
+						Matcher mcat = pcat.matcher(sData);
+						Matcher mti = pti.matcher(sData);
+						Matcher mdesc = pdesc.matcher(sData);
+						Matcher mprice = pprice.matcher(sData);
+
+						if(madd.find() && mdate.find() && mloc.find() && mcat.find() && mti.find() && mdesc.find() && mprice.find()) {
+							map.put("aid", madd.group(1));
+							map.put("date",mdate.group(1));
+							map.put("loc",mloc.group(1));
+							map.put("cat",mcat.group(1));
+							map.put("title",mti.group(1));
+							map.put("desc",mdesc.group(1));
+							map.put("price",mprice.group(1));
+							//System.out.println(map.toString());
+							set.add(map);
+						}
+					} else {
+						Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
+						Matcher madd = padd.matcher(sData);
+						Pattern p = Pattern.compile(Pattern.quote("<ti>") + "(.*?)" + Pattern.quote("</ti>"));
+						Matcher m = p.matcher(sData);
+						if(m.find() & madd.find()) {
+							map.put("aid", madd.group(1));
+							map.put("title",m.group(1));
+							set.add(map);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			System.err.println("Error");
+			e.printStackTrace();
+		} finally {
+			try {
+				cursor.close();
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return set;
 	}
 }
