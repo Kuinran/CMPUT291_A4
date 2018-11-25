@@ -23,11 +23,12 @@ public class HandleQuerry {
 			//each iteration the cursor points to, KEY:DATA
 		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
 		        OperationStatus.SUCCESS) {
+		    	System.out.println("If this prints, we are iterating through the price data");
 		        String keyPrice = new String(foundKey.getData(), "UTF-8");
 		        String dataString = new String(foundData.getData(), "UTF-8");
 		        String[] parts = dataString.split("\\s*,\\s*");
 		        String aid = parts[0];
-		        
+		        System.out.println("The aid is: " + aid);
 		        if(op == ">") {
 		        	if(Integer.parseInt(keyPrice) > price) {
 		        		
