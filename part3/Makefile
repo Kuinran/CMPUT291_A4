@@ -1,6 +1,5 @@
 GS = -g
 JC = javac
-CLASSPATH = .:./usr/share/java/db-5.3.28.jar
 
 .SUFFIXES: .java .class
 .java.class:
@@ -13,6 +12,8 @@ CLASSES = \
 				Formats.java \
 				OpenDB.java \
 				Query_Type.java
+
+CLASSPATH = ./usr/share/java/db-5.3.28.jar
 
 default: classes
 
