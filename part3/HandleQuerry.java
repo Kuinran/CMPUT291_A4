@@ -162,7 +162,7 @@ public class HandleQuerry {
 				aidCursor = addData.openCursor(null, null);
 				while (aidCursor.getNext(foundKey2, foundData2, LockMode.DEFAULT) ==
 				OperationStatus.SUCCESS) {
-					System.out.println("If this prints, we are iterating through price database");
+					System.out.println("Second stage, iterating through getFull");
 					//each iteration the cursor points to, KEY:DATA
 					String keyAdd = new String(foundKey2.getData(), "UTF-8");
 					String dataString2 = new String(foundData2.getData(), "UTF-8");
@@ -205,7 +205,7 @@ public class HandleQuerry {
 			catch(Exception e) {
 			    System.err.println("Error accessing the database: " + e);
 			}
-			
+			System.out.println("We are about to return null");
 		return null;
 	}
 	public HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
