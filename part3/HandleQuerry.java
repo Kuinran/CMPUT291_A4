@@ -1,5 +1,6 @@
 import com.sleepycat.db.*;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.*;
@@ -17,7 +18,7 @@ public class HandleQuerry {
 		    // cursors return every record as a pair of objects of class DatabaseEntry
 		    DatabaseEntry foundKey = new DatabaseEntry();
 		    DatabaseEntry foundData = new DatabaseEntry();
-		 
+		    
 		    // A call to getNext() fetches the next record, until it returns
 		    // with a status that is not OperationStatus.SUCCESS
 			//each iteration the cursor points to, KEY:DATA
@@ -25,7 +26,6 @@ public class HandleQuerry {
 		        OperationStatus.SUCCESS) {
 		    	//System.out.println("If this prints, we are iterating through the price data");
 		        Pattern p = Pattern.compile("[A-Za-z0-9]*");
-		     
 		    	String keyPrice = new String(foundKey.getData(), "UTF-8");
 		    	//System.out.println(keyPrice);
 		    	keyPrice = keyPrice.replaceAll("\\s","");
@@ -215,23 +215,34 @@ public class HandleQuerry {
 			System.out.println("We are about to return null");
 		return map;
 	}
-	public static HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
+	public HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
 		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
 		Cursor myCursor = null;
 		Database addData = Dataarray[0];
 		
 		try {
 		    myCursor = addData.openCursor(null, null);
-		    // cursors return every record as a pair of objects of class DatabaseEntry
-		    DatabaseEntry foundKey = new DatabaseEntry();
-		    DatabaseEntry foundData = new DatabaseEntry();
-		 
+		    // cursors return every record as a pair of objects of class DatabaseEntry		 
+		    
 		    // A call to getNext() fetches the next record, until it returns
 		    // with a status that is not OperationStatus.SUCCESS
 			//each iteration the cursor points to, KEY:DATA
-		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
-		        OperationStatus.SUCCESS) {
-		    	
+		   
+		    //add the stupid spaces in key
+		    int size = loc.length();
+		    for (int i = 0;i < 12 - size;i++) {
+		    	loc = " " + loc;
+		    }
+		    
+		    while (true) {
+		    	//myCursor.getSearchKey(foundKey.setData(data);, foundData, LockMode.DEFAULT) ==
+				       // OperationStatus.SUCCESS
+			    DatabaseEntry foundKey = new DatabaseEntry();
+			    DatabaseEntry foundData = new DatabaseEntry();
+			    foundKey.setData(loc.getBytes());
+			    foundKey.setSize(loc.length());
+			    
+			    if(myCursor.getSearchKey(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 		    	String keyAdd = new String(foundKey.getData(), "UTF-8");
 		    	keyAdd = keyAdd.replaceAll("\\s","");
 		        String dataString = new String(foundData.getData(), "UTF-8");
@@ -255,6 +266,10 @@ public class HandleQuerry {
 		        }
 		    	
 		    	}
+			    else {
+			    	break;
+			    }
+		}
 		    return hashout;
 		}
 		catch(Exception e) {
@@ -272,7 +287,7 @@ public class HandleQuerry {
 		System.out.println("We are about to return null");  
 		return null;
 	}
-	public static HashSet<HashMap<String,String>> getCategory(String category,Database[] Dataarray,boolean full) {
+	public HashSet<HashMap<String,String>> getCategory(String category,Database[] Dataarray,boolean full) {
 		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
 		Cursor myCursor = null;
 		Database catData = Dataarray[0];
@@ -327,6 +342,12 @@ public class HandleQuerry {
 		    }
 		}
 		System.out.println("We are about to return null");  
+		return null;
+	}
+	public static HashSet<HashMap<String,String>> getDate(String category,Database[] Dataarray,boolean full) {
+		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+		 
+		 
 		return null;
 	}
 }
