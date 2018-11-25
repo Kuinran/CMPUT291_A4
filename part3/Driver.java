@@ -196,7 +196,7 @@ public class Driver {
 					System.out.println(String.format("%1$-13s|%2$-30s", result.get("aid"), result.get("title")));
 				}
 			} else { // full mode
-				String str = "%1$-13s|%2$-10s|%3$-10s|%4$-30s|%5$-6s|%s";
+				String str = "%1$-13s|%2$-10s|%3$-10s|%4$-30s|%5$-6s|%6$s";
 				for (Map<String, String> result : results) {
 					System.out.println(String.format(str, "Ad ID", "Date", "Location", "Title", "Price", "Description"));
 					System.out.println(String.format(str, result.get("aid"), result.get("date"), result.get("loc"), result.get("title"),
