@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.regex.Pattern;
 import com.sleepycat.db.*;
 
 public class Driver {
-	private enum Formats {FULL, BRIEF};
+	private enum Formats {BRIEF, FULL};
 	private enum Main_States {PARSING, QUERY, PRINT, QUIT};
 	private enum Query_Type {LOCATION, PRICE, CAT, DATE, TERM, PARTTERM};
 	Main_States state;
@@ -19,7 +20,7 @@ public class Driver {
 	Scanner scanner;
 	Pattern pattern;
 	List<Expression> expressions;
-	Set<Map<String, String>> results;
+	Set<HashMap<String, String>> results;
 	Database[] dbs;
 	
 	private class Expression {
@@ -93,7 +94,8 @@ public class Driver {
 				this.format = Formats.FULL;
 				System.out.println("Full mode");
 			}
-			return true;
+			state = Main_States.PARSING;
+			return false;
 		} else {
 			matcher = pattern.matcher(input);
 			while (matcher.find()) {
@@ -119,28 +121,60 @@ public class Driver {
 	
 	private void processQuery() {
 		System.out.println("Searching for results");
-		results = new HashSet<Map<String, String>>();
-		Set<Map<String, String>> temp = new HashSet<Map<String, String>>();
+		results = new HashSet<HashMap<String, String>>();
+		Set<HashMap<String, String>> temp = new HashSet<HashMap<String, String>>();
 		for (Expression expression : expressions) {
 			// uses a function to search db then saves results in a set
 			switch(expression.type) {
 			case PRICE:
-				//System.out.println("Sending price query " + expression.arg);
+				System.out.println("Sending price query " + expression.arg);
+				if (format == Formats.FULL) {
+					temp = HandleQuerry.getPrice(expression.op, Integer.parseInt(expression.arg), dbs, true);
+					System.out.println(temp.toString() + temp.isEmpty());
+				} else {
+					temp = HandleQuerry.getPrice(expression.op, Integer.parseInt(expression.arg), dbs, false);
+					System.out.println(temp.toString() + temp.isEmpty());
+				}
 				break;
 			case LOCATION:
 				//System.out.println("Sending location query " + expression.arg);
+				if (format == Formats.FULL) {
+					
+				} else {
+					
+				}
 				break;
 			case DATE:
 				//System.out.println("Sending date query " + expression.arg);
+				if (format == Formats.FULL) {
+					
+				} else {
+					
+				}
 				break;
 			case CAT:
 				//System.out.println("Sending cat query " + expression.arg);
+				if (format == Formats.FULL) {
+					
+				} else {
+					
+				}
 				break;
 			case TERM:
 				//System.out.println("Sending term query " + expression.arg);
+				if (format == Formats.FULL) {
+					
+				} else {
+					
+				}
 				break;
 			case PARTTERM:
 				//System.out.println("Sending partial term query " + expression.arg);
+				if (format == Formats.FULL) {
+					
+				} else {
+					
+				}
 				break;
 			}
 			if (results.isEmpty()) { // if no results results are what were returned

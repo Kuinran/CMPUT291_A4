@@ -6,7 +6,8 @@ import java.util.regex.*;
 public class HandleQuerry {
 	
 	//Dataaarray = {addData,dateData,PriceData,termsData}
-	public HashSet<HashMap<String,String>> getPrice(String op, int price, Database[] Dataarray,boolean full) {
+	public static HashSet<HashMap<String,String>> getPrice(String op, int price, Database[] Dataarray,boolean full) {
+		System.out.println("getPrice Reached!!");
 		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
 		Cursor myCursor = null;
 		Database PriceData = Dataarray[2];
@@ -22,11 +23,12 @@ public class HandleQuerry {
 			//each iteration the cursor points to, KEY:DATA
 		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
 		        OperationStatus.SUCCESS) {
+		    	System.out.println("If this prints, we are iterating through the price data");
 		        String keyPrice = new String(foundKey.getData(), "UTF-8");
 		        String dataString = new String(foundData.getData(), "UTF-8");
 		        String[] parts = dataString.split("\\s*,\\s*");
 		        String aid = parts[0];
-		        
+		        System.out.println("The aid is: " + aid);
 		        if(op == ">") {
 		        	if(Integer.parseInt(keyPrice) > price) {
 		        		
@@ -84,7 +86,7 @@ public class HandleQuerry {
 		     		    hashout.add(map);
 		        	}
 		        }
-		        else if(op == "=") {
+		        else if(op.compareTo("=") == 0) {
 		        	if(Integer.parseInt(keyPrice) == price) {
 		        		HashMap<String, String> map;
 		        		if(full) {
@@ -111,7 +113,7 @@ public class HandleQuerry {
 		}
 		return hashout;
 	}
-	public HashMap<String,String> getBrief(String aid, Database addData) {
+	public static HashMap<String,String> getBrief(String aid, Database addData) {
 		HashMap<String, String> map = new HashMap<>(); 
 		map.put("aid", aid);
 	
@@ -134,6 +136,9 @@ public class HandleQuerry {
 						aidCursor.close();
 						return map;
 					}
+					else {
+						System.out.println("If this message prints, failed to add the hashmap to the set. check regex");
+					}
     		
 					}
 				}
@@ -145,10 +150,10 @@ public class HandleQuerry {
 		return null;
 	}
 	
-	public HashMap<String,String> getFull(String aid, Database addData){
+	public static HashMap<String,String> getFull(String aid, Database addData){
 		HashMap<String, String> map = new HashMap<>(); 
 		map.put("aid", aid);
-	
+		
 		//Now find the title and more shitfrom the add database
 		    DatabaseEntry foundKey2 = new DatabaseEntry();
 		    DatabaseEntry foundData2 = new DatabaseEntry();
@@ -157,6 +162,7 @@ public class HandleQuerry {
 				aidCursor = addData.openCursor(null, null);
 				while (aidCursor.getNext(foundKey2, foundData2, LockMode.DEFAULT) ==
 				OperationStatus.SUCCESS) {
+					System.out.println("Second stage, iterating through getFull");
 					//each iteration the cursor points to, KEY:DATA
 					String keyAdd = new String(foundKey2.getData(), "UTF-8");
 					String dataString2 = new String(foundData2.getData(), "UTF-8");
@@ -199,7 +205,15 @@ public class HandleQuerry {
 			catch(Exception e) {
 			    System.err.println("Error accessing the database: " + e);
 			}
-			
+			System.out.println("We are about to return null");
+		return null;
+	}
+	public HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
+		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
+		Cursor myCursor = null;
+		Database LocationData = Dataarray[2];
+		Database addData = Dataarray[0];
+		
 		return null;
 	}
 }
