@@ -221,56 +221,39 @@ public class HandleQuerry {
 		
 		try {
 		    myCursor = addData.openCursor(null, null);
-		    // cursors return every record as a pair of objects of class DatabaseEntry		 
-		    
+		    // cursors return every record as a pair of objects of class DatabaseEntry
+		    DatabaseEntry foundKey = new DatabaseEntry();
+		    DatabaseEntry foundData = new DatabaseEntry();
+		 
 		    // A call to getNext() fetches the next record, until it returns
 		    // with a status that is not OperationStatus.SUCCESS
 			//each iteration the cursor points to, KEY:DATA
-		   
-		    //add the stupid spaces in key
-		    int size = loc.length();
-		    for (int i = 0;i < 12 - size;i++) {
-		    	loc = " " + loc;
-		    }
-		    
-		    while (true) {
-		    	//myCursor.getSearchKey(foundKey.setData(data);, foundData, LockMode.DEFAULT) ==
-				       // OperationStatus.SUCCESS
-
-		    	DatabaseEntry foundKey = new DatabaseEntry(loc.getBytes("UTF-8"));
-			    DatabaseEntry foundData = new DatabaseEntry();
-			    
-			    System.out.println("This is the location:" + loc);
-			    if(myCursor.getSearchKey(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
-			    	System.out.println("The keys are a match!");
-				    String keyAdd = new String(foundKey.getData(), "UTF-8");
-				    System.out.println("This is the key:" + keyAdd);
-			    	keyAdd = keyAdd.replaceAll("\\s","");
-			        String dataString = new String(foundData.getData(), "UTF-8");
-			        Pattern ploc = Pattern.compile(Pattern.quote("<loc>") + "(.*?)" + Pattern.quote("</loc>"));
-			        Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
-			        
-			        Matcher mloc = ploc.matcher(dataString);
-			        Matcher madd = padd.matcher(dataString);
-			        if(mloc.find() && madd.find()) {
-			        	if(mloc.group(1).compareTo(loc) == 0) {
-			        		HashMap<String, String> map;
-			        		if(full) {
-			        			map = getFull(madd.group(1),addData);
-			        		}
-			        		
-			        		else {
-			        			map = getBrief(madd.group(1),addData);
-			        		}
-			        		hashout.add(map);
-			        	}
-			        }
+		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
+		        OperationStatus.SUCCESS) {
+		    	
+		    	String keyAdd = new String(foundKey.getData(), "UTF-8");
+		    	keyAdd = keyAdd.replaceAll("\\s","");
+		        String dataString = new String(foundData.getData(), "UTF-8");
+		        Pattern ploc = Pattern.compile(Pattern.quote("<loc>") + "(.*?)" + Pattern.quote("</loc>"));
+		        Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
+		        
+		        Matcher mloc = ploc.matcher(dataString);
+		        Matcher madd = padd.matcher(dataString);
+		        if(mloc.find() && madd.find()) {
+		        	if(mloc.group(1).compareTo(loc) == 0) {
+		        		HashMap<String, String> map;
+		        		if(full) {
+		        			map = getFull(madd.group(1),addData);
+		        		}
+		        		
+		        		else {
+		        			map = getBrief(madd.group(1),addData);
+		        		}
+		        		hashout.add(map);
+		        	}
+		        }
 		    	
 		    	}
-			    else {
-			    	break;
-			    }
-		}
 		    return hashout;
 		}
 		catch(Exception e) {
