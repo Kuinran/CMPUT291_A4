@@ -156,7 +156,7 @@ public class Main {
 	private static String ParseString(String s) {
 		s = ignoreSpecial(s);
 		//char[] w = s.toCharArray();
-		String sb = null;
+		String sb = "";
 		
 		Matcher m = Pattern.compile("[A-Za-z0-9_-]+").matcher(s);
 		if (m.find()) {
