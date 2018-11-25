@@ -14,8 +14,8 @@ public class OpenDB {
 			
 			dbConfig.setType(DatabaseType.BTREE);
 			dbConfigH.setType(DatabaseType.HASH);
-			dbConfig.setSortedDuplicates(true);
-			dbConfigH.setSortedDuplicates(true);
+			//dbConfig.setSortedDuplicates(true);
+			//dbConfigH.setSortedDuplicates(true);
 			
 			ad = new Database ("ad.idx", null, dbConfigH);
 			date = new Database("da.idx", null, dbConfig);
