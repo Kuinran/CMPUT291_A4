@@ -237,10 +237,9 @@ public class HandleQuerry {
 		    while (true) {
 		    	//myCursor.getSearchKey(foundKey.setData(data);, foundData, LockMode.DEFAULT) ==
 				       // OperationStatus.SUCCESS
-			    DatabaseEntry foundKey = new DatabaseEntry();
+		    	DatabaseEntry foundKey = new DatabaseEntry(loc.getBytes("UTF-8"));
 			    DatabaseEntry foundData = new DatabaseEntry();
-			    foundKey.setData(loc.getBytes());
-			    foundKey.setSize(loc.length());
+			    
 			    System.out.println("This is the location:" + loc);
 			    if(myCursor.getSearchKey(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 		    	System.out.println("The keys are a match!");
