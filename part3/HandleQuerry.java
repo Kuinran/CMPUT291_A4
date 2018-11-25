@@ -345,11 +345,209 @@ public class HandleQuerry {
 		System.out.println("We are about to return null");  
 		return null;
 	}
-	public static HashSet<HashMap<String,String>> getDate(String category,Database[] Dataarray,boolean full) {
-		 SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+	
+	public static HashSet<HashMap<String,String>> getDate(String op, String arg, Database[] dataArray,boolean full) {
+		//System.out.println("reached function");
+		Database pdate = dataArray[1];
+		HashSet<HashMap<String, String>> set = new HashSet<HashMap<String, String>>();
+		HashMap<String, String> map = new HashMap<String, String>();
+		Cursor cursor = null;
+		try {
+			cursor = pdate.openCursor(null, null);
+			DatabaseEntry fKey = new DatabaseEntry(arg.getBytes("UTF-8"));
+			DatabaseEntry fData = new DatabaseEntry();
+			//System.out.println("Looking for hit");
+			if (cursor.getSearchKey(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) { // hit
+				//System.out.println("Hit" + cursor.count());
+				if (op.compareTo("=") == 0) {
+					//System.out.println("Equals");
+					// extract aid
+					String sData = new String(fData.getData(), "UTF-8");
+					String aid = sData.split(",")[0];
+					// add entry
+					if (full) {
+						map = getFull(aid, dataArray[0]);
+					} else {
+						map = getBrief(aid, dataArray[0]);
+					}
+	        		set.add(map);
+					// while entries have same key
+					//System.out.println("searching more entries");
+					while (cursor.getNextDup(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+						//System.out.println("Looping");
+						// extract aid
+						sData = new String(fData.getData(), "UTF-8");
+						aid = sData.split(",")[0];
+						// add entry
+						if (full) {
+							map = getFull(aid, dataArray[0]);
+						} else {
+							map = getBrief(aid, dataArray[0]);
+						}
+		        		set.add(map);
+					}
+				} else if (op.compareTo(">=") == 0) {
+					// extract aid
+					String sData = new String(fData.getData(), "UTF-8");
+					String aid = sData.split(",")[0];
+					// add entry
+					if (full) {
+						map = getFull(aid, dataArray[0]);
+					} else {
+						map = getBrief(aid, dataArray[0]);
+					}
+	        		set.add(map);
+	        		// TODO: test to see if arg is greater than maximal value
+					// while not at end
+					while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+						// extract aid
+						sData = new String(fData.getData(), "UTF-8");
+						aid = sData.split(",")[0];
+						// add entry
+						if (full) {
+							map = getFull(aid, dataArray[0]);
+						} else {
+							map = getBrief(aid, dataArray[0]);
+						}
+		        		set.add(map);
+					}
+				} else if (op.compareTo("<=") == 0) {
+					// extract aid
+					String sData = new String(fData.getData(), "UTF-8");
+					String aid = sData.split(",")[0];
+					// add entry
+					if (full) {
+						map = getFull(aid, dataArray[0]);
+					} else {
+						map = getBrief(aid, dataArray[0]);
+					}
+	        		set.add(map);
+	        		System.out.println("Moving to next non-dupe");
+					cursor.getNextNoDup(fKey, fData, LockMode.DEFAULT);
+					System.out.println("Looking back");
+					while (cursor.getPrevNoDup(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+						System.out.println("Looping");
+						// extract aid
+						sData = new String(fData.getData(), "UTF-8");
+						aid = sData.split(",")[0];
+						// add entry
+						if (full) {
+							map = getFull(aid, dataArray[0]);
+						} else {
+							map = getBrief(aid, dataArray[0]);
+						}
+		        		set.add(map);
+					}
+				} else if (op.compareTo(">") == 0) {
+					String sData, aid;
+					if (cursor.getNextNoDup(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+						sData = new String(fData.getData(), "UTF-8");
+						aid = sData.split(",")[0];
+						// add entry
+						if (full) {
+							map = getFull(aid, dataArray[0]);
+						} else {
+							map = getBrief(aid, dataArray[0]);
+						}
+		        		set.add(map);
+						while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+							sData = new String(fData.getData(), "UTF-8");
+							aid = sData.split(",")[0];
+							// add entry
+							if (full) {
+								map = getFull(aid, dataArray[0]);
+							} else {
+								map = getBrief(aid, dataArray[0]);
+							}
+			        		set.add(map);
+						}
+					}
+	        		// TODO: test to see if arg is greater than maximal value
+				} else if (op.compareTo("<") == 0) {
+					String sData, aid;
+					while (cursor.getPrev(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+						sData = new String(fData.getData(), "UTF-8");
+						aid = sData.split(",")[0];
+						// add entry
+						if (full) {
+							map = getFull(aid, dataArray[0]);
+						} else {
+							map = getBrief(aid, dataArray[0]);
+						}
+		        		set.add(map);
+					}
+				}
+			} else { // misses check bounds
+				// TODO: fix for bounds
+				//System.out.println("Miss");
+				//System.out.println("Hit" + cursor.count());
+				if (op.compareTo(">") == 0) { // search up from first
+					String sData, aid;
+					// do search of first, if fkey greater than key search up, else don't do anything
+					cursor.getFirst(fKey, fData, LockMode.DEFAULT);
+					if (new String(fKey.getData(), "UTF-8").compareTo(arg) > 0) {
+						sData = new String(fData.getData(), "UTF-8");
+						aid = sData.split(",")[0];
+						// add entry
+						if (full) {
+							map = getFull(aid, dataArray[0]);
+						} else {
+							map = getBrief(aid, dataArray[0]);
+						}
+		        		set.add(map);
+		        		while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+							sData = new String(fData.getData(), "UTF-8");
+							aid = sData.split(",")[0];
+							// add entry
+							if (full) {
+								map = getFull(aid, dataArray[0]);
+							} else {
+								map = getBrief(aid, dataArray[0]);
+							}
+			        		set.add(map);
+		        		}
+					}
+				} else if (op.compareTo("<") == 0) { // search down from top
+					String sData, aid;
+					// do search of last, if fkey less than key search down, else don't do anything
+					cursor.getLast(fKey, fData, LockMode.DEFAULT);
+					if (new String(fKey.getData(), "UTF-8").compareTo(arg) < 0) {
+						sData = new String(fData.getData(), "UTF-8");
+						aid = sData.split(",")[0];
+						// add entry
+						if (full) {
+							map = getFull(aid, dataArray[0]);
+						} else {
+							map = getBrief(aid, dataArray[0]);
+						}
+		        		set.add(map);
+		        		while (cursor.getPrev(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+							sData = new String(fData.getData(), "UTF-8");
+							aid = sData.split(",")[0];
+							// add entry
+							if (full) {
+								map = getFull(aid, dataArray[0]);
+							} else {
+								map = getBrief(aid, dataArray[0]);
+							}
+			        		set.add(map);
+		        		}
+					}
+				}
+			}
+		} catch (Exception e) {
+			System.err.println("Error");
+			e.printStackTrace();
+		} finally {
+			try {
+				cursor.close();
+			} catch (DatabaseException e) {
+				System.err.println("Error");
+				e.printStackTrace();
+			}
+		}
 		 
-		 
-		return null;
+		return set;
 	}
 	
 	public static HashSet<HashMap<String, String>> getTerm(String arg, Database[] dataArray, boolean full, boolean partial) {
