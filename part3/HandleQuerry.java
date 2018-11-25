@@ -215,7 +215,7 @@ public class HandleQuerry {
 			System.out.println("We are about to return null");
 		return map;
 	}
-	public HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
+	public static HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
 		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
 		Cursor myCursor = null;
 		Database addData = Dataarray[0];
@@ -272,7 +272,7 @@ public class HandleQuerry {
 		System.out.println("We are about to return null");  
 		return null;
 	}
-	public HashSet<HashMap<String,String>> getCategory(String category,Database[] Dataarray,boolean full) {
+	public static HashSet<HashMap<String,String>> getCategory(String category,Database[] Dataarray,boolean full) {
 		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
 		Cursor myCursor = null;
 		Database catData = Dataarray[0];
