@@ -1,16 +1,11 @@
 #!/bin/bash
 
-ad = ads.txt
-term = terms.txt
-price = prices.txt
-date = pdates.txt
+sort -V -u ads.txt -o ads.txt # | uniq
+sort -V -u terms.txt -o terms.txt # | uniq
+sort -V -u prices.txt -o prices.txt # | uniq
+sort -V -u pdates.txt -o pdates.txt # | uniq
 
-sort -u ad -o ad
-sort -u term -o term
-sort -u price -o price
-sort -u date -o date
-
-db_load -T -f ad -t hash ad.idx
-db_load -T -f term -t btree te.idx
-db_load -T -f price -t btree pr.idx
-db_load -T -f date -t btree da.idx
+cat ads.txt | ./break.pl | db_load -T -t hash ad.idx
+cat terms.txt | ./break.pl | db_load -c duplicates=1 -T -t btree te.idx
+cat prices.txt | ./break.pl | db_load -c duplicates=1 -T -t btree pr.idx
+cat pdates.txt | ./break.pl | db_load -c duplicates=1 -T -t btree da.idx
