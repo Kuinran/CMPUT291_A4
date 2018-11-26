@@ -160,18 +160,28 @@ public class Main {
 		//template for creating file or find another on stackoverflow
 		List<String> terms = new ArrayList<>();
 		
+		String s1 = "&#";
+		String s2 = ";";
+		String s3 = "(" + Pattern.quote(s1) + "(.*?)" + Pattern.quote(s2) + ")";
 		String p1 = "&";
 		String p2 = ";";
-		String p3 = "(" + Pattern.quote(p1) + "(.*?)" + Pattern.quote(p2) + ")";
+		String a = "(\\w*apos\\w*)";
+		String q = "(\\w*quot\\w*)";
+		String am = "(\\w*amp\\w*)";
+		String Pa = "(" + Pattern.quote(p1) + a + Pattern.quote(p2) + ")";
+		String Pq = "(" + Pattern.quote(p1) + q + Pattern.quote(p2) + ")";
+		String Pam = "(" + Pattern.quote(p1) + am + Pattern.quote(p2) + ")";
 		
-		String words[] = title.trim().replaceAll(p3, "").replaceAll("[^A-Za-z0-9_-]" , " ").split("\\s+");
+		title = title.replaceAll(Pa, " ").replaceAll(Pq, " ").replaceAll(Pam, " ");
+		String words[] = title.trim().replaceAll(s3, "").replaceAll("[^A-Za-z0-9_-]" , " ").split("\\s+");
 			for (String w : words) {
 				if (w.length() > 2) {
 						terms.add(w.toLowerCase());
 				}
 			}
-	
-		String dwords[] = desc.trim().replaceAll(p3, "").replaceAll("[^A-Za-z0-9_-]" , " ").split("\\s+");
+			
+		desc = desc.replaceAll(Pa, " ").replaceAll(Pq, " ").replaceAll(Pam, " ");
+		String dwords[] = desc.trim().replaceAll(s3, "").replaceAll("[^A-Za-z0-9_-]" , " ").split("\\s+");
 			for (String w : dwords) {
 				if (w.length() > 2) {
 					terms.add(w.toLowerCase());
