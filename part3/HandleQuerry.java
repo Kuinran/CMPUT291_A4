@@ -216,67 +216,40 @@ public class HandleQuerry {
 			//System.out.println("We are about to return null");
 		return map;
 	}
-	public static HashSet<HashMap<String,String>> getLocation(String loc,Database[] Dataarray,boolean full) {
-		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
-		Cursor myCursor = null;
-		Database addData = Dataarray[0];
+	public static HashSet<HashMap<String,String>> getLocation(String arg,Database[] dataArray,boolean full) {
+		Database ads = dataArray[0];
+		HashSet<HashMap<String, String>> set = new HashSet<HashMap<String, String>>();
+		Cursor cursor = null;
+		Pattern pattern = Pattern.compile(String.format("<loc>%s<\\/loc>", arg));
 		
+		Matcher matcher = null;
 		try {
-		    myCursor = addData.openCursor(null, null);
-		    // cursors return every record as a pair of objects of class DatabaseEntry
-		    DatabaseEntry foundKey = new DatabaseEntry();
-		    DatabaseEntry foundData = new DatabaseEntry();
-		 
-		    // A call to getNext() fetches the next record, until it returns
-		    // with a status that is not OperationStatus.SUCCESS
-			//each iteration the cursor points to, KEY:DATA
-		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
-		        OperationStatus.SUCCESS) {
-		    	
-		    	String keyAdd = new String(foundKey.getData(), "UTF-8");
-		    	keyAdd = keyAdd.replaceAll("\\s","");
-		        String dataString = new String(foundData.getData(), "UTF-8");
-		        Pattern ploc = Pattern.compile(Pattern.quote("<loc>") + "(.*?)" + Pattern.quote("</loc>"));
-		        Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
-		        
-		        Matcher mloc = ploc.matcher(dataString);
-		        Matcher madd = padd.matcher(dataString);
-		        if(mloc.find() && madd.find()) {
-		        	if(mloc.group(1).compareTo(loc) == 0) {
-		        		HashMap<String, String> map;
-		        		if(full) {
-		        			map = getFull(madd.group(1),addData);
-		        		}
-		        		
-		        		else {
-		        			map = getBrief(madd.group(1),addData);
-		        		}
-		        		hashout.add(map);
-		        	}
-		        }
-		    	
-		    	}
-		    return hashout;
+			cursor = ads.openCursor(null, null);
+			DatabaseEntry fKey = new DatabaseEntry();
+			DatabaseEntry fData = new DatabaseEntry();
+			while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+				String sData = new String(fData.getData(), "UTF-8").toLowerCase();
+				matcher = pattern.matcher(sData);
+				if (matcher.find()) { // match found retrieve data
+					addData(set, fData, full);
+				}
+			}
+		} catch (Exception e) {
+			System.err.println("Error");
+			e.printStackTrace();
+		} finally {
+			try {
+				cursor.close();
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		catch(Exception e) {
-			System.err.println("Error accessing the database: " + e);
-		}
-		finally {
-		    try {
-		        if (myCursor != null) {
-		            myCursor.close();
-		        }
-		    } catch(DatabaseException dbe) {
-		        System.err.println("Error in close: " + dbe.toString());
-		    }
-		}
-		System.out.println("We are about to return null");  
-		return null;
+		return set;
 	}
 	public static HashSet<HashMap<String,String>> getCategory(String arg,Database[] dataArray,boolean full) {
 		Database ads = dataArray[0];
 		HashSet<HashMap<String, String>> set = new HashSet<HashMap<String, String>>();
-		HashMap<String, String> map = new HashMap<String, String>();
 		Cursor cursor = null;
 		Pattern pattern = Pattern.compile(String.format("<cat>%s<\\/cat>", arg));
 		
@@ -310,7 +283,6 @@ public class HandleQuerry {
 		//System.out.println("reached function");
 		Database pdate = dataArray[1];
 		HashSet<HashMap<String, String>> set = new HashSet<HashMap<String, String>>();
-		HashMap<String, String> map = new HashMap<String, String>();
 		ArrayList<String> aids = new ArrayList<String>();
 		Cursor cursor = null;
 		try {
@@ -485,7 +457,6 @@ public class HandleQuerry {
 	public static HashSet<HashMap<String, String>> getTerm(String arg, Database[] dataArray, boolean full, boolean partial) {
 		Database ads = dataArray[0];
 		HashSet<HashMap<String, String>> set = new HashSet<HashMap<String, String>>();
-		HashMap<String, String> map = new HashMap<String, String>();
 		Cursor cursor = null;
 		Pattern pattern;
 		if (partial) {
