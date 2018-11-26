@@ -17,7 +17,7 @@ public class HandleQuerry {
 				Cursor cursor = null;
 				try {
 					cursor = pPrice.openCursor(null, null);
-					DatabaseEntry fKey = new DatabaseEntry(String.valueOf(Price).getBytes("UTF-8"));
+					DatabaseEntry fKey = new DatabaseEntry(String.format("%1$12s", String.valueOf(Price)).getBytes("UTF-8"));
 					DatabaseEntry fData = new DatabaseEntry();
 					//System.out.println("Looking for hit");
 					if (cursor.getSearchKey(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) { // hit
