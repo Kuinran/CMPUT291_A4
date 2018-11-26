@@ -22,15 +22,18 @@ public class Driver {
 	List<Expression> expressions;
 	Set<HashMap<String, String>> results;
 	Database[] dbs;
-	
+	int pCount;
+	int dCount;
 	private class Expression {
 		public Query_Type type;
 		public String op;
 		public String arg;
-		Expression(Query_Type type, String op, String arg) {
+		public String argLower;
+		Expression(Query_Type type, String op, String arg, String argLower) {
 			this.type = type;
 			this.op = op;
 			this.arg = arg;
+			this.argLower = argLower;
 		}
 	}
 	
@@ -42,6 +45,8 @@ public class Driver {
 		this.dbs = OpenDB.Open();
 		expressions = new ArrayList<Expression>();
 		pattern = Pattern.compile(createRegex());
+		this.pCount = 0;
+		this.dCount = 0;
 	}
 	
 	public void run() {
@@ -100,19 +105,19 @@ public class Driver {
 			matcher = pattern.matcher(input);
 			while (matcher.find()) {
 				if (matcher.group(1) != null) { // date match
-					expressions.add(this.new Expression(Query_Type.DATE, matcher.group(2), matcher.group(3)));
+					expressions.add(this.new Expression(Query_Type.DATE, matcher.group(2), matcher.group(3), null));
 				} else if (matcher.group(4) != null) { // price match
-					expressions.add(this.new Expression(Query_Type.PRICE, matcher.group(5), matcher.group(6)));
+					expressions.add(this.new Expression(Query_Type.PRICE, matcher.group(5), matcher.group(6), null));
 				} else if (matcher.group(7) != null) { // location match
-					expressions.add(this.new Expression(Query_Type.LOCATION, "=", matcher.group(8)));
+					expressions.add(this.new Expression(Query_Type.LOCATION, "=", matcher.group(8), null));
 				} else if (matcher.group(9) != null) { // cat match
-					expressions.add(this.new Expression(Query_Type.CAT, "=", matcher.group(10)));
+					expressions.add(this.new Expression(Query_Type.CAT, "=", matcher.group(10), null));
 				} else { // term match
 					if (matcher.group().endsWith("%") && matcher.group(12).length()>2) { // partial match
-						expressions.add(this.new Expression(Query_Type.PARTTERM, "NA", matcher.group(12)));
+						expressions.add(this.new Expression(Query_Type.PARTTERM, "NA", matcher.group(12), null));
 					} else { // full match
 						if (matcher.group(12).length()>2) {
-							expressions.add(this.new Expression(Query_Type.TERM,"NA", matcher.group(12)));
+							expressions.add(this.new Expression(Query_Type.TERM,"NA", matcher.group(12), null));
 						}
 					}
 				}
@@ -149,9 +154,9 @@ public class Driver {
 			case DATE:
 				//System.out.println("Sending date query " + expression.arg);
 				if (format == Formats.FULL) {
-					
+					temp = HandleQuerry.getDate(expression.op, expression.arg, dbs, true);
 				} else {
-					
+					temp = HandleQuerry.getDate(expression.op, expression.arg, dbs, false);
 				}
 				break;
 			case CAT:
@@ -165,17 +170,17 @@ public class Driver {
 			case TERM:
 				//System.out.println("Sending term query " + expression.arg);
 				if (format == Formats.FULL) {
-					
+					temp = HandleQuerry.getTerm(expression.arg, dbs, true, false);
 				} else {
-					
+					temp = HandleQuerry.getTerm(expression.arg, dbs, false, false);
 				}
 				break;
 			case PARTTERM:
 				//System.out.println("Sending partial term query " + expression.arg);
 				if (format == Formats.FULL) {
-					
+					temp = HandleQuerry.getTerm(expression.arg, dbs, true, true);
 				} else {
-					
+					temp = HandleQuerry.getTerm(expression.arg, dbs, false, true);
 				}
 				break;
 			}
