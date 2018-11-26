@@ -21,7 +21,7 @@ public class HandleQuerry {
 					DatabaseEntry fData = new DatabaseEntry();
 					//System.out.println("Looking for hit");
 					if (cursor.getSearchKey(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) { // hit
-						System.out.println("Hit" + cursor.count());
+						//System.out.println("Hit" + cursor.count());
 						if (op.compareTo("=") == 0) {
 							//System.out.println("Equals");
 							// extract aid
