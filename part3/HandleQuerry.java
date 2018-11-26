@@ -62,8 +62,14 @@ public class HandleQuerry {
 							aids.add(aid);
 			        		//System.out.println("Moving to next non-dupe");
 							cursor.getNextNoDup(fKey, fData, LockMode.DEFAULT);
+							// extract aid
+							sData = new String(fData.getData(), "UTF-8");
+							aid = sData.split(",")[0];
+							// add entry
+							aids.add(aid);
 							//System.out.println("Looking back");
-							while (cursor.getPrevNoDup(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+							cursor.getPrevNoDup(fKey, fData, LockMode.DEFAULT);
+							while (cursor.getPrev(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 								//System.out.println("Looping");
 								// extract aid
 								sData = new String(fData.getData(), "UTF-8");
