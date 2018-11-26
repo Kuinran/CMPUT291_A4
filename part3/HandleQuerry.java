@@ -9,7 +9,7 @@ import java.util.regex.*;
 public class HandleQuerry {
 	
 	//Dataaarray = {addData,dateData,PriceData,termsData}
-	public static HashSet<HashMap<String,String>> getPrice(String op, String Price, Database[] dataArray,boolean full) {
+	public static HashSet<HashMap<String,String>> getPrice(String op, int Price, Database[] dataArray,boolean full) {
 		//System.out.println("reached function");
 				Database pPrice = dataArray[2];
 				HashSet<HashMap<String, String>> set = new HashSet<HashMap<String, String>>();
@@ -17,7 +17,7 @@ public class HandleQuerry {
 				Cursor cursor = null;
 				try {
 					cursor = pPrice.openCursor(null, null);
-					DatabaseEntry fKey = new DatabaseEntry(Price.getBytes("UTF-8"));
+					DatabaseEntry fKey = new DatabaseEntry(String.valueOf(Price).getBytes("UTF-8"));
 					DatabaseEntry fData = new DatabaseEntry();
 					//System.out.println("Looking for hit");
 					if (cursor.getSearchKey(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) { // hit
@@ -103,7 +103,7 @@ public class HandleQuerry {
 							String sData, aid;
 							// do search of first, if fkey greater than key search up, else don't do anything
 							cursor.getFirst(fKey, fData, LockMode.DEFAULT);
-							if (new String(fKey.getData(), "UTF-8").compareTo(Price) > 0) {
+							if (new String(fKey.getData(), "UTF-8").compareTo(String.valueOf(Price)) > 0) {
 								sData = new String(fData.getData(), "UTF-8");
 								aid = sData.split(",")[0];
 								// add entry
@@ -119,7 +119,7 @@ public class HandleQuerry {
 							String sData, aid;
 							// do search of last, if fkey less than key search down, else don't do anything
 							cursor.getLast(fKey, fData, LockMode.DEFAULT);
-							if (new String(fKey.getData(), "UTF-8").compareTo(Price) < 0) {
+							if (new String(fKey.getData(), "UTF-8").compareTo(String.valueOf(Price)) < 0) {
 								sData = new String(fData.getData(), "UTF-8");
 								aid = sData.split(",")[0];
 								// add entry
