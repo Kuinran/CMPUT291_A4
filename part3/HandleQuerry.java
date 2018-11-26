@@ -9,116 +9,145 @@ import java.util.regex.*;
 public class HandleQuerry {
 	
 	//Dataaarray = {addData,dateData,PriceData,termsData}
-	public static HashSet<HashMap<String,String>> getPrice(String op, int price, Database[] Dataarray,boolean full) {
-		//System.out.println("getPrice Reached!!" + full);
-		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
-		Cursor myCursor = null;
-		Database PriceData = Dataarray[2];
-		Database addData = Dataarray[0];
-		try {
-		    myCursor = PriceData.openCursor(null, null);
-		    // cursors return every record as a pair of objects of class DatabaseEntry
-		    DatabaseEntry foundKey = new DatabaseEntry();
-		    DatabaseEntry foundData = new DatabaseEntry();
-		    
-		    // A call to getNext() fetches the next record, until it returns
-		    // with a status that is not OperationStatus.SUCCESS
-			//each iteration the cursor points to, KEY:DATA
-		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
-		        OperationStatus.SUCCESS) {
-		    	//System.out.println("If this prints, we are iterating through the price data");
-		        Pattern p = Pattern.compile("[A-Za-z0-9]*");
-		    	String keyPrice = new String(foundKey.getData(), "UTF-8");
-		    	//System.out.println(keyPrice);
-		    	keyPrice = keyPrice.replaceAll("\\s","");
-		        String dataString = new String(foundData.getData(), "UTF-8");
-		        String[] parts = dataString.split("\\s*,\\s*");
-		        String aid = parts[0];
-		        //System.out.println("The aid is: " + aid);
-		        if(op.compareTo(">") == 0) {
-		        	if(Integer.parseInt(keyPrice) > price) {
-		        		
-		        		HashMap<String, String> map;
-		        		if(full) {
-		        			map = getFull(aid, addData);
-		        		}
-		        		else {
-		        			map = getBrief(aid,addData);
-		        		}
-		     		    //Now add the hashmap to the set
-		     		    hashout.add(map);
-		        	}
-		        
-		        }
-		        
-		        else if(op.compareTo(">=") == 0) {
-		        	if(Integer.parseInt(keyPrice) >= price) {
-		        		HashMap<String, String> map;
-		        		if(full) {
-		        			map = getFull(aid, addData);
-		        		}
-		        		else {
-		        			map = getBrief(aid,addData);
-		        		}
-		     		    //Now add the hashmap to the set
-		     		    hashout.add(map);
-		        	}
-		        }
-		    
-		        else if(op.compareTo("<") == 0) {
-		        	if(Integer.parseInt(keyPrice) < price) {
-		        		HashMap<String, String> map;
-		        		if(full) {
-		        			map = getFull(aid, addData);
-		        		}
-		        		else {
-		        			map = getBrief(aid,addData);
-		        		}
-		     		    //Now add the hashmap to the set
-		     		    hashout.add(map);
-		        	}
-		        }
-		        
-		        else if(op.compareTo("<=") == 0) {
-		        	if(Integer.parseInt(keyPrice) <= price) {
-		        		HashMap<String, String> map;
-		        		if(full) {
-		        			map = getFull(aid, addData);
-		        		}
-		        		else {
-		        			map = getBrief(aid,addData);
-		        		}
-		     		    //Now add the hashmap to the set
-		     		    hashout.add(map);
-		        	}
-		        }
-		        else if(op.compareTo("=") == 0) {
-		        	if(Integer.parseInt(keyPrice) == price) {
-		        		HashMap<String, String> map;
-		        		if(full) {
-		        			//System.out.println("Hello?");
-		        			map = getFull(aid, addData);
-		        		}
-		        		else {
-		        			map = getBrief(aid,addData);
-		        		}
-		     		    //Now add the hashmap to the set
-		     		    hashout.add(map);
-		        	}
-		        }
-		    }
-		} catch (Exception e) {
-		    System.err.println("Error accessing the database: " + e);
-		} finally {
-		    try {
-		        if (myCursor != null) {
-		            myCursor.close();
-		        }
-		    } catch(DatabaseException dbe) {
-		        System.err.println("Error in close: " + dbe.toString());
-		    }
-		}
-		return hashout;
+	public static HashSet<HashMap<String,String>> getPrice(String op, String Price, Database[] dataArray,boolean full) {
+		//System.out.println("reached function");
+				Database pPrice = dataArray[2];
+				HashSet<HashMap<String, String>> set = new HashSet<HashMap<String, String>>();
+				ArrayList<String> aids = new ArrayList<String>();
+				Cursor cursor = null;
+				try {
+					cursor = pPrice.openCursor(null, null);
+					DatabaseEntry fKey = new DatabaseEntry(Price.getBytes("UTF-8"));
+					DatabaseEntry fData = new DatabaseEntry();
+					//System.out.println("Looking for hit");
+					if (cursor.getSearchKey(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) { // hit
+						//System.out.println("Hit" + cursor.count());
+						if (op.compareTo("=") == 0) {
+							//System.out.println("Equals");
+							// extract aid
+							String sData = new String(fData.getData(), "UTF-8");
+							String aid = sData.split(",")[0];
+							// add entry
+							aids.add(aid);
+							// while entries have same key
+							//System.out.println("searching more entries");
+							while (cursor.getNextDup(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+								//System.out.println("Looping");
+								// extract aid
+								sData = new String(fData.getData(), "UTF-8");
+								aid = sData.split(",")[0];
+								// add entry
+								aids.add(aid);
+							}
+						} else if (op.compareTo(">=") == 0) {
+							// extract aid
+							String sData = new String(fData.getData(), "UTF-8");
+							String aid = sData.split(",")[0];
+							// add entry
+							aids.add(aid);
+			        		// TODO: test to see if arg is greater than maximal value
+							// while not at end
+							while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+								// extract aid
+								sData = new String(fData.getData(), "UTF-8");
+								aid = sData.split(",")[0];
+								// add entry
+								aids.add(aid);
+							}
+						} else if (op.compareTo("<=") == 0) {
+							// extract aid
+							String sData = new String(fData.getData(), "UTF-8");
+							String aid = sData.split(",")[0];
+							// add entry
+							aids.add(aid);
+			        		//System.out.println("Moving to next non-dupe");
+							cursor.getNextNoDup(fKey, fData, LockMode.DEFAULT);
+							//System.out.println("Looking back");
+							while (cursor.getPrevNoDup(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+								//System.out.println("Looping");
+								// extract aid
+								sData = new String(fData.getData(), "UTF-8");
+								aid = sData.split(",")[0];
+								// add entry
+								aids.add(aid);
+							}
+						} else if (op.compareTo(">") == 0) {
+							String sData, aid;
+							if (cursor.getNextNoDup(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+								sData = new String(fData.getData(), "UTF-8");
+								aid = sData.split(",")[0];
+								// add entry
+								aids.add(aid);
+								while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+									sData = new String(fData.getData(), "UTF-8");
+									aid = sData.split(",")[0];
+									// add entry
+									aids.add(aid);
+								}
+							}
+			        		// TODO: test to see if arg is greater than maximal value
+						} else if (op.compareTo("<") == 0) {
+							String sData, aid;
+							while (cursor.getPrev(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+								sData = new String(fData.getData(), "UTF-8");
+								aid = sData.split(",")[0];
+								// add entry
+								aids.add(aid);
+							}
+						}
+					} else { // misses check bounds
+						// TODO: fix for bounds
+						//System.out.println("Miss");
+						//System.out.println("Hit" + cursor.count());
+						if (op.compareTo(">") == 0) { // search up from first
+							String sData, aid;
+							// do search of first, if fkey greater than key search up, else don't do anything
+							cursor.getFirst(fKey, fData, LockMode.DEFAULT);
+							if (new String(fKey.getData(), "UTF-8").compareTo(Price) > 0) {
+								sData = new String(fData.getData(), "UTF-8");
+								aid = sData.split(",")[0];
+								// add entry
+								aids.add(aid);
+				        		while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+									sData = new String(fData.getData(), "UTF-8");
+									aid = sData.split(",")[0];
+									// add entry
+									aids.add(aid);
+				        		}
+							}
+						} else if (op.compareTo("<") == 0) { // search down from top
+							String sData, aid;
+							// do search of last, if fkey less than key search down, else don't do anything
+							cursor.getLast(fKey, fData, LockMode.DEFAULT);
+							if (new String(fKey.getData(), "UTF-8").compareTo(Price) < 0) {
+								sData = new String(fData.getData(), "UTF-8");
+								aid = sData.split(",")[0];
+								// add entry
+								aids.add(aid);
+				        		while (cursor.getPrev(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+									sData = new String(fData.getData(), "UTF-8");
+									aid = sData.split(",")[0];
+									// add entry
+									aids.add(aid);
+				        		}
+							}
+						}
+					}
+					//System.out.println(aids.toString());
+					getData(set, aids, dataArray, full);
+				} catch (Exception e) {
+					System.err.println("Error");
+					e.printStackTrace();
+				} finally {
+					try {
+						cursor.close();
+					} catch (DatabaseException e) {
+						System.err.println("Error");
+						e.printStackTrace();
+					}
+				}
+				 
+				return set;
 	}
 	public static HashMap<String,String> getBrief(String aid, Database addData) {
 		HashMap<String, String> map = new HashMap<>(); 
