@@ -1,9 +1,9 @@
 #!/bin/bash
 
-sort -V -u ../part1/ads.txt -o ads.txt # | uniq
-sort -V -u ../part1/terms.txt -o terms.txt # | uniq
-sort -V -u ../part1/prices.txt -o prices.txt # | uniq
-sort -V -u ../part1/pdates.txt -o pdates.txt # | uniq
+sort  -u ../part1/ads.txt -o ads.txt # | uniq
+sort  -u ../part1/terms.txt -o terms.txt # | uniq
+sort  -u ../part1/prices.txt -o prices.txt # | uniq
+sort  -u ../part1/pdates.txt -o pdates.txt # | uniq
 
 cat ads.txt | ./break.pl | db_load -T -t hash ad.idx
 cat terms.txt | ./break.pl | db_load -c duplicates=1 -T -t btree te.idx
