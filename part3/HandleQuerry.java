@@ -376,7 +376,7 @@ public class HandleQuerry {
 						cursor.getNextNoDup(fKey, fData, LockMode.DEFAULT);
 					}
 					//System.out.println("Looking back");
-					while (cursor.getPrevNoDup(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+					while (cursor.getPrev(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 						//System.out.println("Looping");
 						// extract aid
 						sData = new String(fData.getData(), "UTF-8");
