@@ -165,14 +165,17 @@ public class Main {
 		String s3 = "(" + Pattern.quote(s1) + "(.*?)" + Pattern.quote(s2) + ")";
 		String p1 = "&";
 		String p2 = ";";
-		String a = "(\\w*apos\\w*)";
-		String q = "(\\w*quot\\w*)";
-		String am = "(\\w*amp\\w*)";
-		String Pa = "(" + Pattern.quote(p1) + a + Pattern.quote(p2) + ")";
-		String Pq = "(" + Pattern.quote(p1) + q + Pattern.quote(p2) + ")";
-		String Pam = "(" + Pattern.quote(p1) + am + Pattern.quote(p2) + ")";
+		String a = "apos";
+		String q = "quot";
+		String am = "amp";
 		
-		title = title.replaceAll(Pa, " ").replaceAll(Pq, " ").replaceAll(Pam, " ");
+		String Pa = "(" + Pattern.quote(p1) + Pattern.quote(a) + Pattern.quote(p2) + ")";
+		String Pq = "(" + Pattern.quote(p1) + Pattern.quote(q) + Pattern.quote(p2) + ")";
+		String Pam = "(" + Pattern.quote(p1) +Pattern.quote(am)+ Pattern.quote(p2) + ")";
+		String PE = "(" + Pattern.quote(p1) +Pattern.quote(am + ";" + q)+ Pattern.quote(p2) + ")";
+		
+		
+		title = title.replaceAll(PE, " ").replaceAll(Pq, " ").replaceAll(Pa, " ").replaceAll(Pam, " ");
 		String words[] = title.trim().replaceAll(s3, "").replaceAll("[^A-Za-z0-9_-]" , " ").split("\\s+");
 			for (String w : words) {
 				if (w.length() > 2) {
@@ -180,7 +183,7 @@ public class Main {
 				}
 			}
 			
-		desc = desc.replaceAll(Pa, " ").replaceAll(Pq, " ").replaceAll(Pam, " ");
+		desc = desc.replaceAll(PE, " ").replaceAll(Pq, " ").replaceAll(Pa, " ").replaceAll(Pam, " ");
 		String dwords[] = desc.trim().replaceAll(s3, "").replaceAll("[^A-Za-z0-9_-]" , " ").split("\\s+");
 			for (String w : dwords) {
 				if (w.length() > 2) {
