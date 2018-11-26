@@ -25,7 +25,7 @@ public class HandleQuerry {
 						if (op.compareTo("=") == 0) {
 							//System.out.println("Equals");
 							// extract aid
-							if (Integer.parseInt(new String(fData.getData(),"UTF-8")) != Price) {
+							if (Integer.parseInt((new String(fKey.getData(),"UTF-8")).trim()) != Price) {
 								return set;
 							}
 							String sData = new String(fData.getData(), "UTF-8");
@@ -60,7 +60,7 @@ public class HandleQuerry {
 						} else if (op.compareTo("<=") == 0) {
 							String sData, aid;
 			        		//System.out.println("Moving to next non-dupe");
-							if (Integer.parseInt(new String(fData.getData(),"UTF-8")) == Price) {
+							if (Integer.parseInt((new String(fKey.getData(),"UTF-8")).trim()) == Price) {
 								// extract aid
 								sData = new String(fData.getData(), "UTF-8");
 								aid = sData.split(",")[0];
@@ -79,7 +79,7 @@ public class HandleQuerry {
 							}
 						} else if (op.compareTo(">") == 0) {
 							String sData, aid;
-							if (Integer.parseInt(new String(fData.getData(),"UTF-8")) == Price) {
+							if (Integer.parseInt((new String(fKey.getData(),"UTF-8")).trim()) == Price) {
 								cursor.getNextNoDup(fKey, fData, LockMode.DEFAULT);
 								sData = new String(fData.getData(), "UTF-8");
 								aid = sData.split(",")[0];
@@ -111,7 +111,7 @@ public class HandleQuerry {
 							String sData, aid;
 							// do search of first, if fkey greater than key search up, else don't do anything
 							cursor.getFirst(fKey, fData, LockMode.DEFAULT);
-							if (Integer.parseInt(new String(fKey.getData(),"UTF-8")) > Price) {
+							if (Integer.parseInt((new String(fKey.getData(),"UTF-8")).trim()) > Price) {
 								sData = new String(fData.getData(), "UTF-8");
 								aid = sData.split(",")[0];
 								// add entry
