@@ -171,7 +171,7 @@ public class HandleQuerry {
 					//System.out.println("Second stage, iterating through getFull");
 					//each iteration the cursor points to, KEY:DATA
 					String keyAdd = new String(foundKey2.getData(), "UTF-8");
-					System.out.println(keyAdd);
+					//System.out.println(keyAdd);
 					String dataString2 = new String(foundData2.getData(), "UTF-8");
 					if(aid.compareTo(keyAdd) == 0) {
 						//System.out.println("aid match found");
@@ -486,7 +486,7 @@ public class HandleQuerry {
 				System.out.println("checking first part");
 				addData(set, fData, full);
 			}
-			System.out.println("Iterating now");
+			//System.out.println("Iterating now");
 			while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 				temp = new String(fKey.getData(), "UTF-8").split(":")[0];
 				//System.out.println(temp);
