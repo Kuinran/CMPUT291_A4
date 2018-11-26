@@ -273,62 +273,37 @@ public class HandleQuerry {
 		System.out.println("We are about to return null");  
 		return null;
 	}
-	public static HashSet<HashMap<String,String>> getCategory(String category,Database[] Dataarray,boolean full) {
-		HashSet<HashMap<String,String>> hashout = new HashSet<HashMap<String,String>>();
-		Cursor myCursor = null;
-		Database catData = Dataarray[0];
+	public static HashSet<HashMap<String,String>> getCategory(String arg,Database[] dataArray,boolean full) {
+		Database ads = dataArray[0];
+		HashSet<HashMap<String, String>> set = new HashSet<HashMap<String, String>>();
+		HashMap<String, String> map = new HashMap<String, String>();
+		Cursor cursor = null;
+		Pattern pattern = Pattern.compile(String.format("<cat>%s<\\/cat>", arg));
 		
+		Matcher matcher = null;
 		try {
-		    myCursor = catData.openCursor(null, null);
-		    // cursors return every record as a pair of objects of class DatabaseEntry
-		    DatabaseEntry foundKey = new DatabaseEntry();
-		    DatabaseEntry foundData = new DatabaseEntry();
-		 
-		    // A call to getNext() fetches the next record, until it returns
-		    // with a status that is not OperationStatus.SUCCESS
-			//each iteration the cursor points to, KEY:DATA
-		    while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
-		        OperationStatus.SUCCESS) {
-		    	
-		    	String keyCat = new String(foundKey.getData(), "UTF-8");
-		    	keyCat = keyCat.replaceAll("\\s","");
-		        String dataString = new String(foundData.getData(), "UTF-8");
-		        Pattern pcat = Pattern.compile(Pattern.quote("<cat>") + "(.*?)" + Pattern.quote("</cat>"));
-		        Pattern padd = Pattern.compile(Pattern.quote("<aid>") + "(.*?)" + Pattern.quote("</aid>"));
-		        
-		        Matcher mcat = pcat.matcher(dataString);
-		        Matcher madd = padd.matcher(dataString);
-		        if(mcat.find() && madd.find()) {
-		        	if(mcat.group(1).compareTo(category) == 0) {
-		        		HashMap<String, String> map;
-		        		if(full) {
-		        			map = getFull(madd.group(1),catData);
-		        		}
-		        		
-		        		else {
-		        			map = getBrief(madd.group(1),catData);
-		        		}
-		        		hashout.add(map);
-		        	}
-		        }
-		    	
-		    	}
-		    return hashout;
+			cursor = ads.openCursor(null, null);
+			DatabaseEntry fKey = new DatabaseEntry();
+			DatabaseEntry fData = new DatabaseEntry();
+			while (cursor.getNext(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+				String sData = new String(fData.getData(), "UTF-8").toLowerCase();
+				matcher = pattern.matcher(sData);
+				if (matcher.find()) { // match found retrieve data
+					addData(set, fData, full);
+				}
+			}
+		} catch (Exception e) {
+			System.err.println("Error");
+			e.printStackTrace();
+		} finally {
+			try {
+				cursor.close();
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		catch(Exception e) {
-			System.err.println("Error accessing the database: " + e);
-		}
-		finally {
-		    try {
-		        if (myCursor != null) {
-		            myCursor.close();
-		        }
-		    } catch(DatabaseException dbe) {
-		        System.err.println("Error in close: " + dbe.toString());
-		    }
-		}
-		System.out.println("We are about to return null");  
-		return null;
+		return set;
 	}
 	
 	public static HashSet<HashMap<String,String>> getDate(String op, String arg, Database[] dataArray,boolean full) {
@@ -383,11 +358,11 @@ public class HandleQuerry {
 					String aid = sData.split(",")[0];
 					// add entry
 					aids.add(aid);
-	        		System.out.println("Moving to next non-dupe");
+	        		//System.out.println("Moving to next non-dupe");
 					cursor.getNextNoDup(fKey, fData, LockMode.DEFAULT);
-					System.out.println("Looking back");
+					//System.out.println("Looking back");
 					while (cursor.getPrevNoDup(fKey, fData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
-						System.out.println("Looping");
+						//System.out.println("Looping");
 						// extract aid
 						sData = new String(fData.getData(), "UTF-8");
 						aid = sData.split(",")[0];
